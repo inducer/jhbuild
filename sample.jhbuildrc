@@ -2,42 +2,34 @@
 
 # edit this file to match your settings and copy it to ~/.jhbuildrc
 
-# if you have a GNOME svn account, uncomment this line
-#repos['svn.gnome.org'] = 'svn+ssh://user@svn.gnome.org/svn/'
-
-
 # what module set should be used.  The default at the moment is 'gnome-2.16',
 # but it can be any of the files in the modulesets directory, or even
 # the URL of a module set file on a web server.
-# moduleset = 'gnome-2.18'
+moduleset = 'hedge'
 
-# A list of the modules to build.  Defaults to the Gnome Desktop and
-# developer platform.
-# modules = [ 'meta-gnome-desktop' ]
+# A list of the modules to build.  
+modules = [ 'hedgeenv' ]
+
+import socket
+hostname = socket.gethostname().split(".")[0]
 
 # what directory should the source be checked out to?
-checkoutroot = os.path.expanduser('~/checkout/gnome2')
+checkoutroot = os.path.expanduser('~/mach/%s/src' % hostname)
 
 # the prefix to configure/install modules to (must have write access)
-prefix = '/opt/gnome2'
+prefix = os.path.expanduser('~/mach/%s/pool' % hostname)
 
 # if you do not want to use system-installed libraries for your builds, comment
 # out the lines below
 addpath('PKG_CONFIG_PATH', os.path.join(os.sep, 'usr', 'lib', 'pkgconfig'))
 addpath('PKG_CONFIG_PATH', os.path.join(os.sep, 'usr', 'share', 'pkgconfig'))
+addpath('LD_LIBRARY_PATH', os.path.join(prefix, 'lib'))
+
+use_lib64 = False
 
 # extra arguments to pass to all autogen.sh scripts
 # to speed up builds of gnome2, try '--disable-static --disable-gtk-doc'
-#autogenargs=''
+autogenargs=''
 
-# set CFLAGS:
-#os.environ['CFLAGS'] = '-g -O2'
-
-# On SMP systems you may use something like this to improve compilation time:
-# be aware that not all modules compile correctly with make -j2
-#os.environ['MAKEFLAGS'] = '-j2'
-
-# a alternative install program to use.
-# The included install-check program won't update timestamps if the
-# header hasn't changed
-os.environ['INSTALL'] = os.path.expanduser('~/bin/install-check')
+os.environ['THEPREFIX'] = prefix
+os.environ['GCCVER'] = "42"
