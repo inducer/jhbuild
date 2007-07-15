@@ -124,9 +124,10 @@
     <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
     </branch>
     <dependencies>
-      <dep package="git" />
+      <!--
       <dep package="boost"/>
       <dep package="python"/>
+      -->
     </dependencies>
   </autotools>
   
@@ -134,14 +135,29 @@
     <branch repo="git.tiker" module="pytools.git" checkoutdir="pytools">
     </branch>
     <dependencies>
-      <dep package="git" />
       <dep package="python"/>
     </dependencies>
   </distutils>
 
+  <autotools id="boost-bindings" 
+    autogen-sh="configure">
+    <branch repo="hedgestuff"
+      module="boost-bindings-20070715.tar.gz" version="20070715"
+      size="69025" md5sum="2a31a358da531d6390b9c811710002b3" 
+      checkoutdir="boost-bindings"/>
+  </autotools>
+
+  <autotools id="boost-math-toolkit" 
+    autogen-sh="configure">
+    <branch repo="hedgestuff"
+      module="boost-math-toolkit-20070715.tar.gz" version="20070715"
+      size="5948356" md5sum="97d7e3da74384e87b40c47aac6327426" 
+      checkoutdir="boost-math-toolkit"/>
+  </autotools>
+
   <autotools id="silo" 
-    autogenargs="--without-readline" 
-    autogen-sh="./blah; CFLAGS=-fPIC configure">
+    autogenargs="--without-readline --without-python" 
+    autogen-sh="./blah; CFLAGS=-fPIC ./configure">
     <branch repo="hedgestuff"
       module="silo060605.tar.bz2" version="060605"
       size="736278" md5sum="1fbe3c94e7bce0bfa1f2ec9682eb0c6a" />
@@ -153,17 +169,21 @@
     <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
     </branch>
     <dependencies>
-      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
+      <dep package="boost-bindings"/>
+      <dep package="atlas" />
     </dependencies>
   </autotools>
   
   <metamodule id="hedgeenv">
     <dependencies>
+      <!--
+      <dep package="git" />
       <dep package="silo" />
+      -->
       <dep package="meshpy" />
-      <dep package="atlas" />
+
     </dependencies>
   </metamodule>
 </moduleset>
