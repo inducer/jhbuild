@@ -1,0 +1,77 @@
+# -*- mode: python -*-
+# This file holds the default values for the ~/.jhbuildrc file.
+# Do not copy this to ~/.jhbuildrc
+
+import os
+
+# what modules to build?
+moduleset = 'gnome-2.16'
+modules = [ 'meta-gnome-desktop' ]
+
+# modules to skip during dependency expansion
+skip = []
+
+# directories
+prefix = '/opt/gnome2'
+checkoutroot = os.path.join(os.environ['HOME'], 'cvs', 'gnome2')
+tarballdir = None    # will default to checkoutroot
+buildroot = None     # if set, packages will be build with srcdir!=builddir
+
+# When using srcdir!=builddir builds, this key allows you to use a
+# different builddir name.  Some people like this because it reduces
+# the chance of mixing the two up.  In the pattern, '%s' will be
+# substituted with the srcdir base component.
+builddir_pattern = '%s'
+
+# override environment variables, command line arguments, etc
+autogenargs = '--disable-static --disable-gtk-doc'
+makeargs = ''
+cflags = ''
+installprog = None
+
+# override cvs roots, branch tags, etc
+repos = {}
+cvsroots = {}
+svnroots = {}
+branches = {}
+module_autogenargs = {}
+module_makeargs = {}
+
+# control parts of the build process
+nonetwork     = False  # never touch the network
+alwaysautogen = False  # call autogen.sh even if a makefile is found
+nobuild       = False  # don't actually build the packages
+makeclean     = False  # run make clean before building
+makecheck     = False  # run make check after building
+makedist      = False  # run make dist after building
+makedistcheck = False  # run make distcheck after building
+
+interact      = True   # whether to interact with the user.
+
+# whether to install to lib64 directories?  Currently this will default to
+# True on Linux AMD64, PPC64 or S390x systems, and False everywhere else.
+# Patches accepted to fix the default for other architectures.
+uname = os.uname()
+use_lib64 = (uname[0], uname[4]) in [ ('Linux', 'x86_64'),
+                                      ('Linux', 'ppc64'),
+                                      ('Linux', 's390x') ]
+del uname
+
+# default buildscript.  You should probably leave this as the default.
+# In particular, don't set it to 'gtk'.
+buildscript = 'terminal'
+
+# where to put tinderbox output
+tinderbox_outputdir = None
+
+# sticky date to perform historic checkouts
+sticky_date = None
+
+# whether to try and pretty print the output
+pretty_print = True
+
+# program to use for subversion support (supports svn or bzr)
+svn_program = 'svn'
+
+# whether not to emit notifications through the notification daemon
+nonotify = False

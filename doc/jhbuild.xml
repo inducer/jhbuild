@@ -1,0 +1,1572 @@
+<?xml version="1.0" standalone="no"?><!--*- mode: nxml -*-->
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+    "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+<!-- process to HTML with: xmlto xhtml-nochunks -m custom.xsl jhbuild.xml -->
+<article id="index">
+  <articleinfo>
+    <title>JHBuild Manual</title>
+    <authorgroup>
+      <author>
+	<firstname>James</firstname>
+	<surname>Henstridge</surname>
+      </author>
+    </authorgroup>
+    <copyright>
+      <year>2004</year>
+      <holder>James Henstridge</holder>
+    </copyright>
+  </articleinfo>
+
+  <section id="introduction">
+    <title>Introduction</title>
+
+    <para>JHBuild is a tool designed to make building collections of
+    source packages (also known as modules).  It uses <quote>module
+    set</quote> files to describe the modules available to build.
+    These files include dependency information that allows JHBuild to
+    work out what modules need to be built and in what order to build
+    what the user requested.</para>
+
+    <para>JHBuild was originally written for building <ulink
+    url="http://www.gnome.org">GNOME</ulink>, but has since been
+    extended to make it usable with other projects.  A <quote>module
+    set</quote> file can be hosted on a web server, allowing people to
+    provide build rules independent of the JHBuild.</para>
+
+    <para>JHBuild can build modules from a variety of sources,
+    including:</para>
+
+    <itemizedlist>
+      <listitem>
+	<simpara><ulink url="http://www.cvshome.org/">CVS</ulink>
+	repositories</simpara>
+      </listitem>
+      <listitem>
+	<simpara><ulink
+	url="http://subversion.tigris.org/">Subversion</ulink>
+	repositories</simpara>
+      </listitem>
+      <listitem>
+	<simpara><ulink url="http://wiki.gnuarch.org/">Arch</ulink>
+	archives</simpara>
+      </listitem>
+      <listitem>
+	<simpara>Tar archives hosted on web or ftp sites.</simpara>
+      </listitem>
+    </itemizedlist>
+
+    <para>JHBuild is not intended as a replacement for the
+    distribution's package management system.  Instead, it makes it
+    easy to build everything into a separate install prefix so that it
+    doesn't interfere with the rest of the system.</para>
+
+  </section>
+
+  <section id="getting-started">
+    <title>Getting Started</title>
+
+    <para>JHBuild takes a bit of work to set up on a system.  As well
+    as installing JHBuild's prerequisites, it is necessary to install
+    the prerequisite tools needed to build the software in CVS (or
+    where ever else it is stored).</para>
+
+    <section id="getting-started-install">
+      <title>Installing JHBuild</title>
+
+      <para>Before downloading JHBuild, you should make sure you have
+      a copy of Python &gt;= 2.0 installed on your system.  It is also
+      essential that the Expat XML parser extension is installed.
+      This will be the case if you are using Python &gt;= 2.3, or had
+      expat installed when building Python.  You can check whether
+      this is the case by running the following simple command from
+      the Python interpreter:</para>
+
+      <screen><prompt>&gt;&gt;&gt;</prompt> <userinput>import xml.parsers.expat</userinput>
+<prompt>&gt;&gt;&gt;</prompt></screen>
+
+      <para>If this completes without an exception, then it is
+      installed correctly.</para>
+
+      <para>At the moment, the only way to download JHBuild is via
+      CVS.  This can be achieved with the following commands.  They
+      should be run in the directory where jhbuild will be installed
+      (for example, <filename>~/cvs/gnome2</filename>).</para>
+
+      <screen><prompt>$</prompt> <userinput>cvs -d :pserver:anonymous@anoncvs.gnome.org:/cvs/gnome login</userinput>
+<computeroutput>Logging in to :pserver:anonymous@anoncvs.gnome.org:2401/cvs/gnome
+CVS password: </computeroutput><userinput><replaceable>press enter</replaceable></userinput>
+<prompt>$</prompt> <userinput>cvs -d :pserver:anonymous@anoncvs.gnome.org:/cvs/gnome checkout jhbuild</userinput>
+<prompt>$</prompt></screen>
+
+      <para>This will download JHBuild into a
+      <filename>jhbuild</filename> folder under the current
+      directory.  Now to build and install it:</para>
+
+      <screen><prompt>$</prompt> <userinput>cd jhbuild</userinput>
+<prompt>$</prompt> <userinput>make</userinput>
+<computeroutput>...</computeroutput>
+<prompt>$</prompt> <userinput>make install</userinput>
+<computeroutput>...</computeroutput>
+<prompt>$</prompt></screen>
+
+      <para>If these steps complete successfully, a small shell script
+      should be installed in <filename>~/bin</filename> to start
+      JHBuild.  If this directory is not in the <envar>PATH</envar>,
+      it will need to be added (possibly by editing
+      <filename>~/.profile</filename> or
+      <filename>~/.bashrc</filename>).</para>
+
+      <para>Before JHBuild can be run, it will be necessary to set up
+      a <filename>~/.jhbuildrc</filename> file that configures how
+      JHBuild will behave.</para>
+    </section>
+
+    <section id="getting-started-configure">
+      <title>Configuring JHBuild</title>
+
+      <para>The <filename>~/.jhbuildrc</filename> file uses Python
+      syntax to set a number of configuration variables for JHBuild.
+      A minimal configuration file might look something like
+      this:</para>
+
+      <programlisting>
+moduleset = 'gnome-2.10'
+modules = [ 'meta-gnome-desktop' ]
+checkoutroot = os.path.join(os.environ['HOME'], 'cvs', 'gnome2')
+prefix = os.path.join(os.environ['HOME'], 'prefix')
+os.environ['INSTALL'] = os.path.join(os.environ['HOME'],
+                                     'bin', 'install-check')
+</programlisting>
+
+      <para>This will get JHBuild to build the
+      <application>meta-gnome-desktop</application> module (and its
+      dependencies) from the <systemitem>gnome-2.10</systemitem> module
+      set.  It will unpack source trees to
+      <filename>~/cvs/gnome2</filename> and install modules to
+      <filename>~/prefix</filename>.  It also sets the
+      <envar>INSTALL</envar> environment variable to a program that
+      handles installation of headers specially in order to decrease
+      the work during a rebuild.</para>
+
+      <para>Some of configuration variables available include:</para>
+
+      <variablelist>
+	<?dbhtml list-presentation="table"?>
+	<varlistentry>
+	  <term><varname>moduleset</varname></term>
+	  <listitem>
+	    <simpara>A string or list of strings giving the name(s) of
+	    the module set(s) to use.  If a module set name is a fully
+	    qualified URL, then the module set will be cached locally
+	    and regularly updated.  If two module sets contain a
+	    module with the same name, then the last module set listed
+	    wins.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>modules</varname></term>
+	  <listitem>
+	    <simpara>A list of strings giving the modules you want to
+	    build.  The list of modules actually built will be
+	    recursively expanded to include all the
+	    dependencies.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>checkoutroot</varname></term>
+	  <listitem>
+	    <simpara>The base directory where all source modules
+	    should be unpacked.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>prefix</varname></term>
+	  <listitem>
+	    <simpara>The directory prefix to install modules
+	    to.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>os.environ</varname></term>
+	  <listitem>
+	    <simpara>A dictionary representing the environment.  This
+	    can be used to set or get environment variable values as
+	    seen in the example above.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>skip</varname></term>
+	  <listitem>
+	    <simpara>A list of module names that should not be
+	    included when deciding what to build.  One use of this
+	    variable is to use the version of a package included with
+	    the distribution instead of building it</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>autogenargs</varname></term>
+	  <listitem>
+	    <simpara>A string listing arguments that should be passed
+	    to the <command>autogen.sh</command> or
+	    <command>configure</command> scripts for
+	    modules.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>makeargs</varname></term>
+	  <listitem>
+	    <simpara>A string listing arguments that should be passed
+	    to <command>make</command>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>repos</varname></term>
+	  <listitem>
+	    <simpara>By default, JHBuild will check out code from repositories
+	    using an anonymous repository location.  This dictionary is used to
+	    tell JHBuild to use an alternative repository location for a
+	    particular repository (a developer would probably want to
+	    do this).  This variable is a dictionary where the keys
+	    are short repository names (for example, <systemitem
+	    class="systemname">svn.gnome.org</systemitem> is used for the
+	    GNOME SVN repository), and the values are the alternative
+	    repository location strings.</simpara>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+    <section id="getting-started-bootstrap">
+      <title>Build Prerequisites</title>
+
+      <para>Before any modules can be built, it is necessary to have
+      certain build tools installed.  These include the GNU auto tools
+      (<application>autoconf</application>,
+      <application>automake</application>,
+      <application>libtool</application> and
+      <application>gettext</application>), pkg-config nad
+      Python.</para>
+
+      <para>JHBuild can check if your distro has installed these tools
+      using the <command>sanitycheck</command> command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild sanitycheck</userinput></screen>
+
+      <para>If this command prints any messages, these can be fixed in
+      one of two ways:</para>
+
+      <orderedlist>
+	<listitem>
+	  <simpara>Install the required package from the
+	  distribution.  The <command>sanitycheck</command> command
+	  should be run again afterwards to make sure everything is
+	  okay.</simpara>
+	</listitem>
+	<listitem>
+	  <simpara>Run the <command>bootstrap</command> command to
+	  install the build prerequsites.</simpara>
+	</listitem>
+      </orderedlist>
+
+      <para>The <command>bootstrap</command> command can be invoked
+      like so:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild bootstrap</userinput></screen>
+
+      <para>This will download and install all the build
+      prerequisites.  Once it is finished, the
+      <command>sanitycheck</command> command should be rerun to verify
+      that everything is in place.</para>
+
+      <note>
+	<para>The <command>bootstrap</command> command does not build
+	all the packages required by these tools.  If the OS does not
+	provide those packages, then they will need to be built
+	separately.</para>
+
+	<para>Some packages to check for include
+	<application>m4</application>, <application>perl</application>
+	and a C compiler.</para>
+      </note>
+    </section>
+
+    <section id="getting-started-use">
+      <title>Using JHBuild</title>
+
+      <para>Now that everything is set up, JHBuild can be used to
+      build some software.  To build all the modules selected in the
+      <filename>~/.jhbuildrc</filename> file, run the following command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild build</userinput></screen>
+
+      <para>This will download, configure, compile and install each of
+      the modules.  If an error occurs at any stage, JHBuild will
+      present a menu asking the user what to do.  These choices
+      include dropping to a shell to fix the error, rerunning the
+      build stage, giving up on the module (which will also cause any
+      modules depending on it to fail), or ignore the error and
+      continue.</para>
+
+      <para>It is also possible to build a different set of modules
+      (and their dependencies) by passing their names as arguments to
+      the <command>build</command> command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild build gtk+</userinput></screen>
+
+      <para>If you exit JHBuild part way through a build for some
+      reason, it is possible to pick up a build at a particular
+      package using the <option>--start-at</option> option:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild build --start-at=pango</userinput></screen>
+
+      <para>To build one or more modules, without their dependencies,
+      the <command>buildone</command> command can be used:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild buildone gtk+</userinput></screen>
+
+      <para>To get a list of the modules jhbuild will build, and the
+      order they will be built in, use the <command>list</command>
+      command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild list</userinput></screen>
+
+      <para>To get information about a particular module, the
+      <command>info</command> command can be used:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild info gtk+</userinput></screen>
+
+      <para>If your internet bandwidth varies, you can get JHBuild to
+      download or update all the software it will build in one go
+      without actually building it:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild update</userinput></screen>
+
+      <para>Later on, you can tell JHBuild to build everything without
+      downloading or updating:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild build --no-network</userinput></screen>
+
+      <para>If you want to run a particular command with the same
+      environment variables set that JHBuild uses, use the
+      <command>run</command> command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild run <replaceable>program</replaceable></userinput></screen>
+
+      <para>To start a shell with that environment, use the
+      <command>shell</command> command:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild shell</userinput></screen>
+
+    </section>
+  </section>
+
+  <section id="command-reference">
+    <title>Command Reference</title>
+
+    <para>JHBuild uses a command line syntax similar to tools like CVS:</para>
+
+    <cmdsynopsis>
+      <command>jhbuild</command>
+      <arg><replaceable>global-options</replaceable></arg>
+      <arg choice="plain">command</arg>
+      <arg><replaceable>command-arguments</replaceable></arg>
+    </cmdsynopsis>
+
+    <para>The global jhbuild options are:</para>
+
+    <variablelist>
+      <varlistentry>
+	<term><option>-f</option>, <option>--file</option>
+	<replaceable>config</replaceable></term>
+	<listitem>
+	  <simpara>Use an alternative configuration file, instead of
+	  the default <filename>~/.jhbuildrc</filename>.</simpara>
+	</listitem>
+      </varlistentry>
+
+      <varlistentry>
+	<term><option>-m</option>, <option>--moduleset</option>
+	<replaceable>moduleset</replaceable></term>
+	<listitem>
+	  <simpara>Use a module set other than the one listed in the
+	  configuration file.</simpara>
+	</listitem>
+      </varlistentry>
+    </variablelist>
+
+    <para>Command specific options are listed below.</para>
+
+    <section id="command-reference-bootstrap">
+      <title>bootstrap</title>
+
+      <para>The <command>bootstrap</command> command is used to
+      install a set of build utilities required to build most modules
+      (eg. autoconf, automake, etc).</para>
+
+      <cmdsynopsis>
+	<command>jhbuild bootstrap</command>
+      </cmdsynopsis>
+
+      <para>Internally <command>bootstrap</command> is implemented
+      using the same code as <command>build</command>, using the
+      <filename>bootstrap.modules</filename> moduleset.</para>
+
+    </section>
+
+    <section id="command-reference-build">
+      <title>build</title>
+
+      <para>The <command>build</command> command is used to build one
+      or more packages, including their dependencies.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild build</command>
+	<arg>--autogen</arg>
+	<arg>--clean</arg>
+	<arg>--no-network</arg>
+	<arg rep="repeat">--skip=<replaceable>module</replaceable></arg>
+	<arg>--start-at=<replaceable>module</replaceable></arg>
+	<arg>-D <replaceable>date</replaceable></arg>
+	<arg rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>If no module names are given on the command line, then the
+      module list found in the configuration file will be used.</para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><option>-a</option>, <option>--autogen</option></term>
+	  <listitem>
+	    <simpara>Always run <command>autogen.sh</command>
+	    before building modules.  By default,
+	    <command>autogen.sh</command> will only be called if the
+	    toplevel makefile is missing.  Otherwise, it relies on the
+	    package's makefiles to detect if configure needs to be
+	    rebuilt or rerun.</simpara>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>-c</option>, <option>--clean</option></term>
+	  <listitem>
+	    <simpara>Run <command>make clean</command> before building
+	    modules.</simpara>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>-n</option>, <option>--no-network</option></term>
+	  <listitem>
+	    <simpara>Do not access the network when building modules.
+	    This will skip download or update stages in a build.  If a
+	    module can't be built without network access, it will
+	    fail.</simpara>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>-s</option>,
+	  <option>--skip</option>=<replaceable>module,...</replaceable></term>
+	  <listitem>
+	    <simpara>Ignore the named modules when following
+	    dependencies to expand the list of modules to be
+	    built.</simpara>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>-t</option>,
+	  <option>--start-at</option>=<replaceable>module</replaceable></term>
+	  <listitem>
+	    <simpara>After expanding the list of modules to build,
+	    start at the named module rather than at the beginning of
+	    the list.  This is useful if the build was interrupted for
+	    some reason.</simpara>
+	  </listitem>
+	</varlistentry>
+
+	<varlistentry>
+	  <term><option>-D</option>
+	  <replaceable>date</replaceable></term>
+	  <listitem>
+	    <simpara>If the underlying version control system supports
+	    it, try to update the source tree to its state at the
+	    given date before building.  The date string should be in
+	    ISO format.</simpara>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+    </section>
+
+    <section id="command-reference-buildone">
+      <title>buildone</title>
+
+      <para>The <command>buildone</command> command is similar to
+      <command>build</command>, but it does not use dependency
+      information to expand the module list.  It is useful for quickly
+      rebuilding one or more modules.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild buildone</command>
+	<arg>--autogen</arg>
+	<arg>--clean</arg>
+	<arg>--no-network</arg>
+	<arg>-D <replaceable>date</replaceable></arg>
+	<arg choice="plain" rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>The <option>--autogen</option>, <option>--clean</option>,
+      <option>--no-network</option> and <option>-D</option> options
+      are processed the same as for <command>build</command>.</para>
+
+      <para>Unlike <command>build</command>, at least one module must
+      be listed on the command line.</para>
+
+    </section>
+
+    <section id="command-reference-dot">
+      <title>dot</title>
+
+      <para>The <command>dot</command> command generates a file
+      describing the directed graph formed by the dependencies between
+      a set of modules.  This file can then be processed using the
+      <ulink url="http://www.graphviz.org/">GraphViz</ulink> software
+      to produce a nice diagram.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild dot</command>
+	<arg rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>If no module names are given on the command line, then the
+      module list found in the configuration file will be used.</para>
+
+      <para>The output of this command can easily be piped to the
+      <command>dot</command> utility to generate a postscript
+      file:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild dot <replaceable>modules</replaceable> | dot -Tps > dependencies.ps</userinput></screen>
+
+    </section>
+
+    <section id="command-reference-info">
+      <title>info</title>
+
+      <para>The <command>info</command> command is used to display
+      information about one or more modules.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild info</command>
+	<arg choice="plain" rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>The command prints the module name, type, dependencies,
+      dependent packages, and the time it was last installed with
+      JHBuild.  It may also print some information specific to the
+      module type, such as the CVS repository or download URL.</para>
+
+    </section>
+
+    <section id="command-reference-list">
+      <title>list</title>
+
+      <para>The <command>list</command> command is used to show the
+      expanded list of modules the <command>build</command> command
+      would build.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild list</command>
+	<arg>--show-revision</arg>
+	<arg rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>If no module names are given on the command line, then the
+      module list found in the configuration file will be used.</para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><option>-r</option>,
+	  <option>--show-revision</option></term>
+	  <listitem>
+	    <simpara>If a particular module is being checked out on a
+	    branch, show the branch tag name with the module
+	    name.</simpara>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+    </section>
+
+    <section id="command-reference-run">
+      <title>run</title>
+
+      <para>The <command>run</command> command is used to run an
+      arbitrary command using the same environment as JHBuild uses
+      when building modules.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild run</command>
+	<arg choice="plain"><replaceable>program</replaceable></arg>
+	<arg rep="repeat"><replaceable>argument</replaceable></arg>
+      </cmdsynopsis>
+
+      <para>If using JHBuild to build GNOME, this command can be
+      useful in X startup scripts.</para>
+    </section>
+
+    <section id="command-reference-sanitycheck">
+      <title>sanitycheck</title>
+
+      <para>The <command>sanitycheck</command> command performs a
+      number of checks to see whether the build environment is
+      okay.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild sanitycheck</command>
+      </cmdsynopsis>
+
+      <para>Some of the checks include:</para>
+
+      <itemizedlist>
+	<listitem>
+	  <simpara>That the checkout and install prefixes are
+	  writable.</simpara>
+	</listitem>
+	<listitem>
+	  <simpara>That some of the required build tools are
+	  installed.</simpara>
+	</listitem>
+	<listitem>
+	  <simpara>That some commonly used macros are available in the
+	  search paths of the <command>aclocal</command> commands
+	  associated with the various versions of
+	  <command>automake</command>.</simpara>
+	</listitem>
+	<listitem>
+	  <simpara>That the XML catalog contains the DocBook DTD and
+	  stylesheets.</simpara>
+	</listitem>
+      </itemizedlist>
+
+    </section>
+
+    <section id="command-reference-shell">
+      <title>shell</title>
+
+      <para>The <command>shell</command> command starts the user's
+      shell with the same environment as JHBuild uses when building
+      modules.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild shell</command>
+      </cmdsynopsis>
+
+      <para>This command is roughly equivalent to the
+      following:</para>
+
+      <screen><prompt>$</prompt> <userinput>jhbuild run $SHELL</userinput></screen>
+    </section>
+
+    <section id="command-reference-tinderbox">
+      <title>tinderbox</title>
+
+      <para>The <command>tinderbox</command> command is similar to
+      <command>build</command>, but writes all terminal output to HTML
+      files suitable for publishing on a website.  It can be used to
+      set up systems similar to Mozilla's Tinderbox, or Debian's
+      Buildd.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild tinderbox</command>
+	<arg>--autogen</arg>
+	<arg>--clean</arg>
+	<arg>--no-network</arg>
+	<arg>--output=<replaceable>directory</replaceable></arg>
+	<arg rep="repeat">--skip=<replaceable>module</replaceable></arg>
+	<arg>--start-at=<replaceable>module</replaceable></arg>
+	<arg>-D <replaceable>date</replaceable></arg>
+	<arg rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>The <option>--autogen</option>, <option>--clean</option>,
+      <option>--no-network</option>, <option>--skip</option>,
+      <option>--start-at</option> and <option>-D</option> options are
+      processed the same as for <command>build</command>.</para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><option>-o</option>,
+	  <option>--output</option>=<replaceable>directory</replaceable></term>
+	  <listitem>
+	    <simpara>The directory to write the HTML build
+	    logs.</simpara>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+
+    </section>
+
+    <section id="command-reference-update">
+      <title>update</title>
+
+      <para>The <command>update</command> command is similar to
+      <command>build</command>, but only performs the download or
+      update stage for modules without building them.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild update</command>
+	<arg rep="repeat">--skip=<replaceable>module</replaceable></arg>
+	<arg>--start-at=<replaceable>module</replaceable></arg>
+	<arg>-D <replaceable>date</replaceable></arg>
+	<arg rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>The <option>--skip</option>, <option>--start-at</option>
+      and <option>-D</option> options are processed the same as for
+      <command>build</command>.</para>
+
+    </section>
+
+    <section id="command-reference-updateone">
+      <title>updateone</title>
+
+      <para>The <command>updateone</command> command is similar to
+      <command>update</command>, but it does not use dependency
+      information to expand the module list.  It is useful for quickly
+      updating one or more modules.</para>
+
+      <cmdsynopsis>
+	<command>jhbuild updateone</command>
+	<arg>-D <replaceable>date</replaceable></arg>
+	<arg choice="plain" rep="repeat">module</arg>
+      </cmdsynopsis>
+
+      <para>The <option>-D</option> option is processed the same as
+      for <command>update</command>.</para>
+
+      <para>Unlike <command>update</command>, at least one module must
+      be listed on the command line.</para>
+    </section>
+
+  </section>
+
+  <section id="config-reference">
+    <title>Configuration File Reference</title>
+
+    <para>The <filename>~/.jhbuildrc</filename> file uses standard
+    Python syntax.  The file is run, and the resulting variables
+    defined in the namespace are used to control how JHBuild acts.  A
+    set of default values are inserted into the namespace before
+    running the user's configuration file.</para>
+
+    <section id="config-reference-variables">
+      <title>Configuration Variables</title>
+
+      <variablelist>
+	<?dbhtml list-presentation="table"?>
+	<varlistentry>
+	  <term><varname>alwaysautogen</varname></term>
+	  <listitem>
+	    <simpara>If set to <constant>True</constant>, then always
+	    run <command>autogen.sh</command> before
+	    <command>make</command> even if a makefile exists.  This
+	    is equivalent to passing <option>--always-autogen</option>
+	    option to JHBuild.  Defaults to
+	    <constant>False</constant>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>autogenargs</varname></term>
+	  <listitem>
+	    <simpara>A string containing arguments passed to the
+	    <command>autogen.sh</command> script of all modules.  Can
+	    be overriden for particular modules using the
+	    <varname>module_autogenargs</varname>
+	    dictionary.</simpara>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>builddir_pattern</varname></term>
+	  <listitem>
+	    <simpara>A <function>printf</function> style formatting
+	    pattern used to generate build directory names.  This is
+	    only used when using separate source and build trees.  The
+	    <literal>%s</literal> in the format string will be
+	    replaced with the source directory name.  Defaults to
+	    <literal>'%s'</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>buildroot</varname></term>
+	  <listitem>
+	    <simpara>A string giving the parent directory to place
+	    build trees.  Defaults to <constant>None</constant>, which
+	    causes builds to be performed within the source
+	    trees.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>checkoutroot</varname></term>
+	  <listitem>
+	    <simpara>A string giving the directory to unpack source
+	    trees to.  Unless <varname>buildroot</varname> is set,
+	    builds will occur in this directory too.  Defaults to
+	    <filename>~/cvs/gnome2</filename>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>cvsroots</varname></term>
+	  <listitem>
+	    <simpara>A dictionary that can be used to change the CVS
+	    roots used to check out source code.  If you have a CVS
+	    account for a particular project, you can set the
+	    associated key to use that account rather than the
+	    anonymous account.  For example, you might want to set
+	    <literal>'gnome.org'</literal> to
+	    <literal>':ext:<replaceable>username</replaceable>@cvs.gnome.org:/cvs/gnome'</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>branches</varname></term>
+	  <listitem>
+	    <simpara>A dictionary that can be used to override the
+	    branch used for a particular module.  This is useful if
+	    you are doing some changes on a branch of a module and
+	    want JHBuild to build that branch instead of the one
+	    listed in the module set.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>makeargs</varname></term>
+	  <listitem>
+	    <simpara>A string listing additional arguments to be
+	    passed to <command>make</command>.  Defaults to
+	    <literal>''</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>makecheck</varname></term>
+	  <listitem>
+	    <simpara>A boolean value specifying whether to run
+	    <command>make check</command> after
+	    <command>make</command>.  This might be useful in a
+	    tinderbox-style setup.  Defaults to
+	    <constant>False</constant>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>makeclean</varname></term>
+	  <listitem>
+	    <simpara>A boolean value specifying whether to run
+	    <command>make clean</command> before
+	    <command>make</command>.  Defaults to
+	    <constant>False</constant>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>module_autogenargs</varname></term>
+	  <listitem>
+	    <simpara>A dictionary mapping module names to strings
+	    giving arguments to be passed to
+	    <command>autogen.sh</command>.  If a particular module
+	    isn't listed in the dictionary, the global
+	    <varname>autogenargs</varname> will be used
+	    instead.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>module_makeargs</varname></term>
+	  <listitem>
+	    <simpara>A dictionary mapping module names to strings
+	    giving arguments to be passed to <command>make</command>.
+	    If a particular module isn't listed in the dictionary, the
+	    global <varname>makeargs</varname> will be used
+	    instead.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>modules</varname></term>
+	  <listitem>
+	    <simpara>A list of module names to build.  This list will
+	    be expanded using the dependency information found in the
+	    module set.  Defaults to <literal>[ 'meta-gnome-desktop'
+	    ]</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>moduleset</varname></term>
+	  <listitem>
+	    <simpara>A string giving the name of the module set to
+	    use.  This can either be a short string to refer to one of
+	    JHBuild's included module sets, or a full HTTP URL to
+	    refer to an externally managed module set.  Currently
+	    defaults to <literal>'gnome-2.10'</literal>, but is
+	    usually updated as GNOME development progresses.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>nonetwork</varname></term>
+	  <listitem>
+	    <simpara>A boolean value saying whether to access the
+	    network or not.  This affects checking out or updating CVS
+	    modules, downloading tarballs and updating module sets.
+	    Setting this to <constant>True</constant> is equivalent to
+	    passing the <option>--no-network</option> option to
+	    JHBuild.  Defaults to
+	    <constant>False</constant>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>prefix</varname></term>
+	  <listitem>
+	    <simpara>A string giving the prefix to install modules to.
+	    Defaults to <literal>'/opt/gnome2'</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>pretty_print</varname></term>
+	  <listitem>
+	    <simpara>A boolean value that can be used to disable
+	    pretty printing of subprocess output.  Currently there is
+	    only support for pretty printing CVS output.  You probably
+	    only want to disable this if the pretty printing causes
+	    problems.  Defaults to <literal>True</literal>.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>skip</varname></term>
+	  <listitem>
+	    <simpara>A list of modules to skip when expanding the list
+	    of modules to build.  This is similar to the
+	    <option>--skip</option> option (in fact, the
+	    <option>--skip</option> option extends this list).  This
+	    list is empty by default.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>sticky_date</varname></term>
+	  <listitem>
+	    <simpara>If set, JHBuild will attempt to check out modules
+	    as they existed at the given date.  The date should be
+	    given in the form
+	    <literal>'<replaceable>yyyy</replaceable>-<replaceable>mm</replaceable>-<replaceable>dd</replaceable>'</literal>.
+	    Defaults to <constant>None</constant>.</simpara>
+	</listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>svnroots</varname></term>
+	  <listitem>
+	    <simpara>Similar to <varname>cvsroots</varname> but for
+	    Subversion repositories.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>tarballdir</varname></term>
+	  <listitem>
+	    <simpara>If set, tarballs will be downloaded to this
+	    directory instead of <varname>checkoutroot</varname>.
+	    This is useful if you have multiple JHBuild environments
+	    or regularly blow away your
+	    <varname>checkoutroot</varname> and want to reduce
+	    bandwidth usage.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>tinderbox_outputdir</varname></term>
+	  <listitem>
+	    <simpara>A string giving the directory to store
+	    <command>jhbuild tinderbox</command> output.  This string
+	    can be overridden by the <option>--output</option> option.
+	    Defaults to <constant>None</constant>, so either the
+	    command line option must be used or this variable must be
+	    set in the configuration file.</simpara>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><varname>use_lib64</varname></term>
+	  <listitem>
+	    <simpara>A boolean value that specifies whether to install
+	    libraries to <filename>lib64</filename> directories.  If
+	    this is set,
+	    <literal>--libdir=\${exec_prefix}/lib64</literal> will be
+	    passed to configure.  Defaults to
+	    <constant>True</constant> if running on
+	    <literal>x86_64</literal>, <literal>ppc64</literal> or
+	    <literal>s390x</literal> Linux, and
+	    <constant>False</constant> on other systems.</simpara>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+
+    <section id="config-reference-other">
+      <title>Other Configuration File Structures</title>
+
+      <para>In addition to the above variables, there are some other
+      things that can be set in the configuration file:</para>
+
+      <variablelist>
+	<varlistentry>
+	  <term><varname>os.environ</varname></term>
+	  <listitem>
+	    <para>This is dictionary represents the environment of the
+	    process (which also gets passed on to processes that
+	    JHBuild spawns).</para>
+	    <para>Some environment variables you may want to set
+	    include <envar>CFLAGS</envar>, <envar>INSTALL</envar> (to
+	    use the more efficient <command>install-check</command>
+	    program included with JHBuild) and
+	    <envar>LDFLAGS</envar>.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><function>addpath</function>(<parameter>envvar</parameter>,
+	  <parameter>pathname</parameter>)</term>
+	  <listitem>
+	    <para>This will add a directory to a
+	    <envar>PATH</envar>-style environment variable.  It will
+	    correctly handle the case when the environment variable is
+	    initially empty (having a stray colon at the beginning or
+	    end of an environment variable can have unexpected
+	    consequences).</para>
+	    <para>This function has special handling for the
+	    <envar>ACLOCAL_FLAGS</envar> environment variable, which
+	    expects paths to be listed in the form <literal>-I
+	    <replaceable>pathname</replaceable></literal>.</para>
+	  </listitem>
+	</varlistentry>
+	<varlistentry>
+	  <term><function>prependpath</function>(<parameter>envvar</parameter>,
+	  <parameter>pathname</parameter>)</term>
+	  <listitem>
+	    <para>After processing the configuration file, JHBuild
+	    will alter some paths based on variables such as
+	    <varname>prefix</varname> (eg. adding
+	    <literal>$prefix/bin</literal> to the start of
+	    <envar>PATH</envar>).</para>
+	    <para>The <function>prependpath</function> function works
+	    like <function>addpath</function>, except that the
+	    environment variable is modified after JHBuild has made
+	    its changes to the environment.</para>
+	  </listitem>
+	</varlistentry>
+      </variablelist>
+    </section>
+  </section>
+
+  <section id="moduleset-syntax">
+    <title>Module Set File Syntax</title>
+
+    <para>JHBuild uses simple XML files to describe the dependencies
+    between modules.  A RELAX-NG schema and Document Type Definition
+    are included with JHBuild in the <filename>modulesets/</filename>
+    directory.  The RELAX-NG schema makes it trivial to edit module
+    set files using <literal>nxml-mode</literal> in Emacs.</para>
+
+    <para>The toplevel element in a module set file is <sgmltag
+    class="element">moduleset</sgmltag> element.  Currently no XML
+    namespace is used, but in the future this might change.  The
+    elements below the toplevel come in three types: module sources,
+    include statements and module definitions.</para>
+
+    <section id="moduleset-syntax-sources">
+      <title>Module Sources</title>
+
+      <para>Rather than listing the full location of every module, a
+      number of "module sources" are listed in the module set, and
+      then referenced by name in the module definitions.  As well as
+      reducing the amount of redundant information in the module set,
+      it makes it easy for a user to specify an alternative source for
+      those modules (for CVS and Subversion, it is common for
+      developers and users to use different repository access
+      methods).</para>
+
+      <section id="moduleset-syntax-sources-cvsroot">
+	<title>cvsroot</title>
+
+	<para>The <sgmltag class="element">cvsroot</sgmltag> element
+	is used to describe a CVS repository.</para>
+
+	<programlisting>
+&lt;cvsroot name="<replaceable>rootname</replaceable>"
+         [ default="<replaceable>yes|no</replaceable>" ]
+         root="<replaceable>anon-cvsroot</replaceable>"
+         password="<replaceable>anon-password</replaceable>"/&gt;
+</programlisting>
+
+        <para>The <sgmltag class="attribute">name</sgmltag> attribute
+        should be a unique identifier for the CVS repository.</para>
+
+	<para>If <sgmltag class="attribute">default</sgmltag>
+	attribute says whether this is the default module source for
+	this module set file.</para>
+
+	<para>The <sgmltag class="attribute">root</sgmltag> attribute
+	lists the CVS root used for anonymous access to this
+	repository, and the <sgmltag
+	class="attribute">password</sgmltag> attribute gives the
+	password used for anonymous access.</para>
+      </section>
+
+      <section id="moduleset-syntax-sources-svnroot">
+	<title>svnroot</title>
+
+	<para>The <sgmltag class="element">svnroot</sgmltag> element
+	is used to describe a Subversion repository.</para>
+
+	<programlisting>
+&lt;svnroot name="<replaceable>rootname</replaceable>"
+         [ default="<replaceable>yes|no</replaceable>" ]
+         href="<replaceable>anon-svnroot</replaceable>"/&gt;
+</programlisting>
+
+        <para>The <sgmltag class="attribute">name</sgmltag> attribute
+        should be a unique identifier for the Subversion
+        repository.</para>
+
+	<para>If <sgmltag class="attribute">default</sgmltag>
+	attribute says whether this is the default module source for
+	this module set file.</para>
+
+	<para>The <sgmltag class="attribute">href</sgmltag> attribute
+	lists the base URL for the repository.  This will probably be
+	either a <literal>http</literal>, <literal>https</literal> or
+	<literal>svn</literal> URL.</para>
+      </section>
+
+      <section id="moduleset-syntax-sources-arch-archive">
+	<title>arch-archive</title>
+
+	<para>The <sgmltag class="element">arch-archive</sgmltag> element
+	is used to describe a GNU Arch archive.</para>
+
+	<programlisting>
+&lt;arch-archive name="<replaceable>archivename</replaceable>"
+              [ default="<replaceable>yes|no</replaceable>" ]
+              href="<replaceable>mirror-url</replaceable>"/&gt;
+</programlisting>
+
+        <para>The <sgmltag class="attribute">name</sgmltag> attribute
+        should be the Arch archive name.</para>
+
+	<para>If <sgmltag class="attribute">default</sgmltag>
+	attribute says whether this is the default module source for
+	this module set file.</para>
+
+	<para>The <sgmltag class="attribute">href</sgmltag> attribute
+	lists a public mirror URL for the archive.</para>
+      </section>
+    </section>
+
+    <section id="moduleset-syntax-includes">
+      <title>Including Other Module Sets</title>
+
+      <para>JHBuild allows one module set to include the contents of
+      another by reference using the <sgmltag
+      class="element">include</sgmltag> element.</para>
+
+      <programlisting>
+&lt;include href="<replaceable>uri</replaceable>"/&gt;
+</programlisting>
+
+      <para>The <sgmltag class="attribute">href</sgmltag> is a URI
+      reference to the module set to be included, relative to the file
+      containing the <sgmltag class="element">include</sgmltag>
+      element.</para>
+
+      <para>Only module definitions are imported from the referenced
+      module set &mdash; module sources are not.  Multiple levels of
+      includes are allowed, but include loops are not (there isn't any
+      code to handle loops at the moment).</para>
+    </section>
+
+    <section id="moduleset-syntax-defs">
+      <title>Module Definitions</title>
+
+      <para>There are various types of module definitions that can be
+      used in a module set file, and the list can easily be extended.
+      Only the most common ones will be mentioned here.</para>
+
+      <section id="moduleset-syntax-defs-cvsmodule">
+	<title>cvsmodule</title>
+
+	<para>The <sgmltag class="element">cvsmodule</sgmltag> element
+	is used to define a module that is to be built from
+	CVS.</para>
+
+	<programlisting>
+&lt;cvsmodule module="<replaceable>modulename</replaceable>"
+           [ revision="<replaceable>branch-or-tag</replaceable>" ]
+           [ checkoutdir="<replaceable>directory</replaceable>" ]
+           [ root="<replaceable>rootname</replaceable>" ]
+           [ autogenargs="<replaceable>autogenargs</replaceable>" ]
+           [ makeargs="<replaceable>makeargs</replaceable>" ]
+           [ supports-non-srcdir-builds="<replaceable>yes|no</replaceable>" ]&gt;
+  &lt;dependencies&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/dependencies&gt;
+  &lt;suggests&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/suggests&gt;
+&lt;/cvsmodule&gt;
+</programlisting>
+
+        <para>The <sgmltag class="attribute">module</sgmltag>,
+        <sgmltag class="attribute">revision</sgmltag> and <sgmltag
+        class="attribute">root</sgmltag> attributes identify the
+        module to check out from CVS.  The <sgmltag
+        class="attribute">checkoutdir</sgmltag> attribute can be used
+        to specify an alternative directory to check out to (by
+        default, the value of <sgmltag
+        class="attribute">module</sgmltag> is used).</para>
+
+	<para>The <sgmltag class="attribute">autogenargs</sgmltag>,
+	<sgmltag class="attribute">makeargs</sgmltag> and <sgmltag
+	class="attribute">supports-non-srcdir-builds</sgmltag>
+	attributes are common to many different module types.  The
+	<sgmltag class="attribute">autogenargs</sgmltag> attribute
+	lists additional arguments to be passed to
+	<command>autogen.sh</command>, and <sgmltag
+	class="attribute">makeargs</sgmltag> lists additional
+	arguments to be passed to <command>make</command>.  The
+	<sgmltag
+	class="attribute">supports-non-srcdir-builds</sgmltag>
+	attribute is used to mark modules that can't be cleanly built
+	using a separate source directory.</para>
+
+	<para>The <sgmltag class="element">dependencies</sgmltag> and
+	<sgmltag class="element">suggests</sgmltag> elements are used
+	to declare the dependencies of the module.  Any modules listed
+	in the <sgmltag class="element">dependencies</sgmltag> element
+	will be added to the module list for <command>jhbuild
+	build</command> if it isn't already included, and make sure
+	the dependent modules are built first.</para>
+
+	<para>After generating the modules list, the modules listed in
+	the <sgmltag class="element">suggests</sgmltag> element will
+	be used to further sort the modules list (although it will not
+	pull any additional modules).  This is intended for cases
+	where a module has an optional dependency on another
+	module.</para>
+      </section>
+
+      <section id="moduleset-syntax-defs-svnmodule">
+	<title>svnmodule</title>
+
+	<para>The <sgmltag class="element">svnmodule</sgmltag> element
+	is used to define a module that is to be built from
+	Subversion.</para>
+
+	<programlisting>
+&lt;svnmodule module="<replaceable>modulename</replaceable>"
+           [ checkoutdir="<replaceable>directory</replaceable>" ]
+           [ root="<replaceable>rootname</replaceable>" ]
+           [ autogenargs="<replaceable>autogenargs</replaceable>" ]
+           [ makeargs="<replaceable>makeargs</replaceable>" ]
+           [ supports-non-srcdir-builds="<replaceable>yes|no</replaceable>" ]&gt;
+  &lt;dependencies&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/dependencies&gt;
+  &lt;suggests&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/suggests&gt;
+&lt;/svnmodule&gt;
+</programlisting>
+        <para>The <sgmltag class="attribute">module</sgmltag>
+        attribute gives the path of the module relative to the
+        repository URI.  All other options for this element are
+        processed as for <link
+        linkend="moduleset-syntax-defs-cvsmodule"><sgmltag
+        class="element">cvsmodule</sgmltag></link>.</para>
+      </section>
+
+      <section id="moduleset-syntax-defs-archmodule">
+	<title>archmodule</title>
+
+	<para>The <sgmltag class="element">archmodule</sgmltag> element
+	is used to define a module that is to be built from
+	a GNU Arch archive.</para>
+
+	<programlisting>
+&lt;archmodule version="<replaceable>modulename</replaceable>"
+            [ checkoutdir="<replaceable>directory</replaceable>" ]
+            [ root="<replaceable>rootname</replaceable>" ]
+            [ autogenargs="<replaceable>autogenargs</replaceable>" ]
+            [ makeargs="<replaceable>makeargs</replaceable>" ]
+            [ supports-non-srcdir-builds="<replaceable>yes|no</replaceable>" ]&gt;
+  &lt;dependencies&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/dependencies&gt;
+  &lt;suggests&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/suggests&gt;
+&lt;/archmodule&gt;
+</programlisting>
+        <para>The <sgmltag class="attribute">version</sgmltag>
+        attribute gives the version to be checked out from the archive
+        specified by <sgmltag class="attribute">root</sgmltag>.  All
+        other options for this element are processed as for <link
+        linkend="moduleset-syntax-defs-cvsmodule"><sgmltag
+        class="element">cvsmodule</sgmltag></link>.</para>
+      </section>
+
+      <section id="moduleset-syntax-defs-tarball">
+	<title>tarball</title>
+
+	<para>The <sgmltag class="element">tarball</sgmltag> element
+	is used to define a module that is to be built from
+	a tarball.</para>
+
+	<programlisting>
+&lt;tarball id="<replaceable>modulename</replaceable>"
+            [ version="<replaceable>version</replaceable>" ]
+            [ autogenargs="<replaceable>autogenargs</replaceable>" ]
+            [ makeargs="<replaceable>makeargs</replaceable>" ]
+            [ supports-non-srcdir-builds="<replaceable>yes|no</replaceable>" ]&gt;
+  &lt;source href="<replaceable>source-url</replaceable>"
+          [ size="<replaceable>source-size</replaceable>" ]
+          [ md5sum="<replaceable>source-md5sum</replaceable>" ]/&gt;
+  &lt;patches&gt;
+    &lt;patch file="<replaceable>filename</replaceable>" strip="<replaceable>level</replaceable>"/&gt;
+    ...
+  &lt;/patches&gt;
+  &lt;dependencies&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/dependencies&gt;
+  &lt;suggests&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/suggests&gt;
+&lt;/tarball&gt;
+</programlisting>
+        <para>The <sgmltag class="attribute">id</sgmltag> and <sgmltag
+        class="attribute">version</sgmltag> attributes are used to
+        identify the module.</para>
+	<para>The <sgmltag class="element">source</sgmltag> element
+	specifies the file to download and compile.  The <sgmltag
+	class="attribute">href</sgmltag> attribute is mandatory, while
+	the <sgmltag class="attribute">size</sgmltag> and <sgmltag
+	class="attribute">md5sum</sgmltag> attributes are optional.
+	If the last two attributes are present, they are used to check
+	that the source package was downloaded correctly.</para>
+	<para>The <sgmltag class="element">patches</sgmltag> element
+	is used to specify one or more patches to apply to the source
+	tree after unpacking.  The patch files are looked up in the
+	<filename>jhbuild/patches/</filename> directory, and the
+	<sgmltag class="attribute">strip</sgmltag> attribute says how
+	many levels of directories to prune when applying the
+	patch.</para>
+	<para>The other attributes and the <sgmltag
+	class="element">dependencies</sgmltag> and <sgmltag
+	class="element">suggests</sgmltag> sub-elements are processed
+	as for <link
+	linkend="moduleset-syntax-defs-cvsmodule"><sgmltag
+	class="element">cvsmodule</sgmltag></link>.</para>
+      </section>
+
+      <section id="moduleset-syntax-defs-metamodule">
+	<title>metamodule</title>
+
+	<para>The <sgmltag class="element">metamodule</sgmltag>
+	element defines a module that doesn't actually do anythin.
+	The only purpose of a module of this type is its
+	dependencies.</para>
+
+	<programlisting>
+&lt;metamodule id="<replaceable>modulename</replaceable>"&gt;
+  &lt;dependencies&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/dependencies&gt;
+  &lt;suggests&gt;
+    &lt;dep package="<replaceable>modulename</replaceable>"/&gt;
+    ...
+  &lt;/suggests&gt;
+&lt;/metamodule&gt;
+</programlisting>
+        <para>The <sgmltag class="attribute">id</sgmltag> attribute
+        gives the name of the module.  The child elements are handled
+        as for <link
+        linkend="moduleset-syntax-defs-cvsmodule"><sgmltag
+        class="element">cvsmodule</sgmltag></link>.</para>
+      </section>
+    </section>
+  </section>
+
+  <section id="faq">
+    <title>Frequently Asked Questions</title>
+
+    <qandaset defaultlabel="qanda">
+      <qandadiv>
+	<title>General JHBuild Questions</title>
+	<qandaentry>
+	  <question>
+	    <simpara>The <command>wget</command> command can't
+	    download any tarballs.  How do I get it to work with my
+	    firewall?</simpara>
+	  </question>
+	  <answer>
+	    <para>This can be fixed by creating or editing a
+	    <filename>~/.wgetrc</filename> file.  If you need to go
+	    through an HTTP proxy to access FTP sites, add a line like
+	    the following to the file:</para>
+	    <programlisting>ftp_proxy = http://<replaceable>hostname</replaceable>:<replaceable>port</replaceable>/</programlisting>
+	    <para>If you just need to use passive FTP connections
+	    (sometimes needed with NAT firewalls), add the following
+	    line:</para>
+	    <programlisting>passive_ftp = on</programlisting>
+	    <para>This will fix all uses of the
+	    <command>wget</command> command.</para>
+	  </answer>
+	</qandaentry>
+	<qandaentry>
+	  <question>
+	    <simpara>Building stuff is slow.  Is there any way I can
+	    speed it up?</simpara>
+	  </question>
+	  <answer>
+	    <para>Other than buying a faster CPU, hard disk or getting
+	    more memory, you might want to install <ulink
+	    url="http://ccache.samba.org/">CCache</ulink>, which can
+	    cache compilation results for you.  It is available with
+	    most distributions.</para>
+	    <para>After installing CCache, set the cache size with the
+	    following command:</para>
+	    <programlisting>ccache -M 2G</programlisting>
+	    <para>(replace <literal>2G</literal> with the size you
+	    want for your cache).  Then create symlinks to CCache for
+	    your compiler in <filename>~/bin</filename>:</para>
+	    <programlisting>cd ~/bin
+for cmd in cc gcc c++ g++; do
+  ln -s /usr/bin/ccache $cmd
+done</programlisting>
+            <para>You can check the status of your cache (such as
+            cache hit rates) with the following command:</para>
+	    <programlisting>ccache -s</programlisting>
+	  </answer>
+	</qandaentry>
+	<qandaentry>
+	  <question>
+	    <simpara>Is there a better way to monitor the status of
+	    the build than looking at terminal window?</simpara>
+	  </question>
+	  <answer>
+	    <para>If you have Zenity >= 2.9 installed on your system,
+	    JHBuild will display an icon in the system tray.  The icon
+	    will display the current build stage, and the tooltip will
+	    show the last message from JHBuild.</para>
+	    <para>In the future, the icon may get support for popping
+	    up a balloon on error.</para>
+	  </answer>
+	</qandaentry>
+      </qandadiv>
+      <qandadiv>
+	<title>Building GNOME</title>
+	<qandaentry>
+	  <question>
+	    <simpara>What other prerequisites are needed to build GNOME
+	    with JHBuild?</simpara>
+	  </question>
+	  <answer>
+	    <para>Some of the packages you will need on your system
+	    include:</para>
+	    <itemizedlist>
+	      <listitem>
+		<simpara>DocBook XML DTD and XSLT stylesheets.  These
+		need to be registered in the XML catalog
+		(<filename>/etc/xml/catalog</filename>).</simpara>
+	      </listitem>
+	      <listitem>
+		<simpara>X libraries</simpara>
+	      </listitem>
+	      <listitem>
+		<simpara>fam or gamin (used by gnome-vfs for file
+		monitoring).</simpara>
+	      </listitem>
+	      <listitem>
+		<simpara><filename>libsmbclient</filename> from Samba
+		(used for browsing Windows networks).</simpara>
+	      </listitem>
+	      <listitem>
+	      <simpara><filename>libbz2</filename> from
+		bzip2.</simpara>
+	      </listitem>
+	      <listitem>
+		<simpara><filename>libpng</filename>,
+		<filename>libjpeg</filename> and
+		<filename>libtiff</filename> (used for image
+		loading).</simpara>
+	      </listitem>
+	    </itemizedlist>
+	    <para>If you are installing distro packages, you may need
+	    to install corresponding "dev" or "devel" packages.  Note
+	    that this list is just a starting point &mdash; not a
+	    comprehensive list.</para>
+	  </answer>
+	</qandaentry>
+	<qandaentry>
+	  <question>
+	    <simpara>I've built GNOME with JHBuild.  How do I run
+	    it?</simpara>
+	  </question>
+	  <answer>
+	    <para>You will want to create a
+	    <filename>~/.xsession</filename> file, which is run by the
+	    display manager when you log in.  This file should look
+	    something like this:</para>
+	    <programlisting>#!/bin/sh
+exec jhbuild run gnome-session</programlisting>
+	    <para>Finally, you should make sure that the
+	    <filename>~/.xsession</filename> file is executable.</para>
+	  </answer>
+	</qandaentry>
+	<qandaentry>
+	  <question>
+	    <simpara>I built GNOME using JHBuild with
+	    <varname>prefix</varname> set to <filename>/usr</filename>,
+	    and now my system is broken.  What should I do?</simpara>
+	  </question>
+	  <answer>
+	    <para>Don't set <varname>prefix</varname> to
+	    <filename>/usr</filename>.</para>
+	  </answer>
+	</qandaentry>
+	<qandaentry>
+	  <question>
+	    <simpara>How do I get
+	    <command>gnome-volume-manager</command> to work when
+	    running in a prefix?</simpara>
+	  </question>
+	  <answer>
+	    <para>The <command>gnome-volume-manager</command> program
+	    reacts to messages from <command>hald</command> over the
+	    system message bus, which must be running as root.
+	    Assuming that your distribution comes with
+	    <acronym>HAL</acronym>, the main problem is getting
+	    <command>gnome-volume-manager</command> to talk to the
+	    system message bus.</para>
+	    <para>Since communication is done over a UNIX domain
+	    socket, the easiest way to do this is to create a symlink
+	    from <filename>/var/run/dbus</filename> to
+	    <filename>$prefix/var/run/dbus</filename>:</para>
+	    <programlisting>mkdir -p $prefix/var/run
+cd $prefix/var/run
+ln -s /var/run/dbus dbus</programlisting>
+            <para>You may also have trouble building HAL with JHBuild,
+            since it tries to install some things outside of its build
+            root.  Running <userinput>make -k install</userinput> in
+            the hal directory might help here.</para>
+	  </answer>
+	</qandaentry>
+      </qandadiv>
+    </qandaset>
+  </section>
+</article>

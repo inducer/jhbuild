@@ -1,0 +1,175 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: nxml -*-->
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<moduleset>
+  <repository type="tarball" name="gnu"
+    href="http://ftp.gnu.org/gnu/"/>
+  <repository type="tarball" name="pkgconfig"
+    href="http://pkgconfig.freedesktop.org/releases/"/>
+  <repository type="tarball" name="python"
+    href="http://www.python.org/ftp/python/"/>
+  <repository type="tarball" name="apache"
+    href="http://download.nextag.com/apache/"/>
+  <repository type="tarball" name="subversion"
+    href="http://subversion.tigris.org/downloads/"/>
+  <repository type="tarball" name="sourceforge"
+    href="http://downloads.sourceforge.net/"/>
+  <repository type="tarball" name="trilinos"
+    href="http://software.sandia.gov/trilinos/downloads/files/"/>
+  <repository type="tarball" name="openssl"
+    href="http://www.openssl.org/source/"/>
+  <repository type="tarball" name="neon"
+    href="http://www.webdav.org/neon/"/>
+  <repository type="tarball" name="curl"
+    href="http://curl.haxx.se/download/"/>
+  <repository type="tarball" name="git"
+    href="http://kernel.org/pub/software/scm/git/"/>
+  <repository type="tarball" name="netlib"
+    href="http://netlib.org"/>
+
+  <autotools id="openssl" 
+    autogen-sh="config" 
+    alwaysautogen="yes"
+    autogenargs="shared"
+    standardautogen="no">
+    <branch repo="openssl"
+      module="openssl-0.9.8e.tar.gz" version="0.9.8e"
+      size="3341665" md5sum="3a7ff24f6ea5cd711984722ad654b927" />
+  </autotools>
+
+  <autotools id="curl" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="curl"
+      module="curl-7.16.2.tar.gz" version="7.16.2"
+      size="2121758" md5sum="efa3301691d3ad6d454475f4d276c562" />
+    <dependencies>
+      <dep package="openssl"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="git" makeargs="prefix=$THEPREFIX">
+    <branch repo="git"
+      module="git-1.5.1.4.tar.bz2" version="1.5.1.4"
+      size="1126258" md5sum="ed4c3b6678bde5a4e09c2206430242df" />
+    <dependencies>
+      <dep package="curl"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="neon" 
+    autogen-sh="configure"
+    autogenargs="--with-ssl --enable-shared">
+    <branch repo="neon"
+      module="neon-0.25.5.tar.gz" version="0.25.5"
+      size="736201" md5sum="b5fdb71dd407f0a3de0f267d27c9ab17" />
+  </autotools>
+
+  <autotools id="apr" autogen-sh="configure">
+    <branch repo="apache"
+      module="apr/apr-0.9.13.tar.gz" version="0.9.13"
+      size="1051795" md5sum="233894af598d8347fd68cf836e7dee91" />
+  </autotools>
+
+  <autotools id="aprutil" autogen-sh="configure" autogenargs="--with-apr=`apr-config --prefix`">
+    <branch repo="apache"
+      module="apr/apr-util-0.9.13.tar.gz" version="0.9.13"
+      size="593575" md5sum="31e3881af0d9546286b0057717cdb89b" />
+  </autotools>
+
+  <autotools id="subversion" autogen-sh="configure" 
+    autogenargs="--with-apr=`apr-config --prefix` --with-apr-util=`apu-config --prefix` --without-apxs --with-ssl">
+    <branch repo="subversion"
+      module="subversion-1.4.3.tar.gz" version="1.4.3"
+      size="6303068" md5sum="6b991b63e3e1f69670c9e15708e40176" />
+    <dependencies>
+      <dep package="apr"/>
+      <dep package="aprutil"/>
+      <dep package="openssl"/>
+      <dep package="neon"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="lapack"
+    autogen-sh="./blah; cp make.inc.example make.inc; true"
+    makeargs="lib"
+    standardautogen="no"
+    alwaysautogen="yes"
+    skipinstall="yes"
+    >
+    <branch repo="netlib"
+      module="lapack/lapack-lite-3.1.1.tgz" version="3.1.1"
+      size="5332509" md5sum="5feace3f4507a92ef822b2e0b50151d7" 
+      />
+  </autotools>
+
+  <autotools id="atlas" 
+    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure "
+    autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
+    makeargs="-C mybuild" standardautogen="no">
+    <branch repo="sourceforge"
+      module="math-atlas/atlas3.7.30.tar.bz2" version="3.7.30"
+      size="2126223" md5sum="904b750739e7edbd7a7dadfc50d11324" 
+      checkoutdir="ATLAS"/>
+    <dependencies>
+      <dep package="lapack"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="screen" autogen-sh="configure"
+    alwaysautogen="yes">
+    <branch repo="gnu"
+      module="screen/screen-4.0.2.tar.gz" version="4.0.2"
+      size="840519" md5sum="ed68ea9b43d9fba0972cb017a24940a1" />
+  </autotools>
+  
+  <autotools id="python" autogenargs="--with-fpectl --enable-shared" autogen-sh="configure">
+    <branch repo="python"
+      module="2.5/Python-2.5.tar.bz2" version="2.5"
+      size="9357099" md5sum="ddb7401e711354ca83b7842b733825a3" />
+  </autotools>
+
+  <autotools id="swig" autogenargs="--without-perl5 --without-ocaml --without-php4 --without-ruby --without-tcl --without-java --with-python=`which python`" autogen-sh="configure">
+    <branch repo="sourceforge"
+      module="swig/swig-1.3.31.tar.gz" version="1.3.31"
+      size="4177499" md5sum="4a0bae63e3713e89b26db7209b6a7e05" />
+    <dependencies>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+
+  <distutils id="numpy">
+    <branch repo="sourceforge"
+      module="numpy/numpy-1.0.1.tar.gz" version="1.0.1"
+      size="1249684" md5sum="13a29244cbe03e0d45e56d8d90ecb55d" />
+    <dependencies>
+      <dep package="python"/>
+    </dependencies>
+  </distutils>
+
+  <autotools id="trilinos" autogen-sh="configure"
+    autogenargs="--with-mpi-compilers --enable-amesos --disable-examples --disable-tests --with-libs='-lcblas -latlas'">
+    <branch repo="trilinos"
+      module="trilinos-7.0.7.tar.gz" version="7.0.7"
+      size="14352505" md5sum="ba2fa627e1ffa4f30f6721c86d6144e3" />
+    <dependencies>
+      <dep package="atlas"/>
+      <!--<dep package="python"/>-->
+      <!--<dep package="swig"/>-->
+    </dependencies>
+  </autotools>
+  
+  <metamodule id="sledgeenv">
+    <dependencies>
+      <dep package="subversion" />
+      <dep package="git" />
+      <dep package="trilinos" />
+    </dependencies>
+  </metamodule>
+
+  <metamodule id="sledgepy">
+    <dependencies>
+      <dep package="sledgepp" />
+      <dep package="numpy" />
+    </dependencies>
+  </metamodule>
+</moduleset>

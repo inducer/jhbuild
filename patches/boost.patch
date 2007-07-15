@@ -1,0 +1,131 @@
+diff -urN boost-1.34.0.old/tools/build/v2/tools/gcc.jam boost-1.34.0/tools/build/v2/tools/gcc.jam
+--- boost-1.34.0.old/tools/build/v2/tools/gcc.jam	2007-05-03 02:09:04.000000000 -0400
++++ boost-1.34.0/tools/build/v2/tools/gcc.jam	2007-06-29 18:28:05.000000000 -0400
+@@ -268,8 +268,8 @@
+ 
+ # Declare flags and action for compilation
+ flags gcc.compile OPTIONS <optimization>off : -O0 ;
+-flags gcc.compile OPTIONS <optimization>speed : -O3 ;
+-flags gcc.compile OPTIONS <optimization>space : -Os ;
++flags gcc.compile OPTIONS <optimization>speed : -O3 -fno-strict-aliasing ;
++flags gcc.compile OPTIONS <optimization>space : -Os -fno-strict-aliasing ;
+ 
+ flags gcc.compile OPTIONS <inlining>off : -fno-inline ;
+ flags gcc.compile OPTIONS <inlining>on : -Wno-inline ;
+diff -urN boost-1.34.0.old/tools/jam/src/build.jam boost-1.34.0/tools/jam/src/build.jam
+--- boost-1.34.0.old/tools/jam/src/build.jam	2006-07-23 12:24:21.000000000 -0400
++++ boost-1.34.0/tools/jam/src/build.jam	2007-06-29 18:23:58.000000000 -0400
+@@ -153,7 +153,7 @@
+ ## GCC 2.x, 3.x, 4.x
+ toolset gcc gcc : "-o " : -D
+     : -pedantic
+-    [ opt --release : [ opt --symbols : -g : -s ] -O3 ]
++    [ opt --release : [ opt --symbols : -g : -s ] -O3 -fno-strict-aliasing ]
+     [ opt --debug : -g -O0 -fno-inline ]
+     -I$(--python-include) -Wno-long-long
+     : -L$(--python-lib[1]) -l$(--python-lib[2]) ;
+diff -urN boost-1.34.0.old/tools/jam/src/builtins.c boost-1.34.0/tools/jam/src/builtins.c
+--- boost-1.34.0.old/tools/jam/src/builtins.c	2006-08-28 15:33:41.000000000 -0400
++++ boost-1.34.0/tools/jam/src/builtins.c	2007-06-29 18:12:45.000000000 -0400
+@@ -24,6 +24,7 @@
+ # include "compile.h"
+ # include "native.h"
+ # include "variable.h"
++# include "timestamp.h"
+ # include <ctype.h>
+ 
+ /*
+@@ -63,6 +64,13 @@
+ void backtrace_line( FRAME *frame );
+ void print_source_line( PARSE* p );
+ 
++void init_set();
++void init_path();
++void init_regex();
++void init_property_set();
++void init_sequence();
++void init_order();
++
+ RULE* bind_builtin( char* name, LIST*(*f)(PARSE*, FRAME*), int flags, char** args )
+ {
+     argument_list* arg_list = 0;
+diff -urN boost-1.34.0.old/tools/jam/src/debug.c boost-1.34.0/tools/jam/src/debug.c
+--- boost-1.34.0.old/tools/jam/src/debug.c	2005-10-02 20:47:36.000000000 -0400
++++ boost-1.34.0/tools/jam/src/debug.c	2007-06-29 18:09:39.000000000 -0400
+@@ -107,8 +107,8 @@
+         profile_total.memory += p->memory;
+     }
+     printf("%10d %10d %10d %12.6f %10d %10d %s\n",
+-        p->num_entries, p->cumulative, p->net, q,
+-        p->memory, mem_each,
++	   (int) p->num_entries, (int) p->cumulative, (int) p->net, q,
++	   (int) p->memory, (int) mem_each,
+         p->name);
+ }
+ 
+diff -urN boost-1.34.0.old/tools/jam/src/hcache.c boost-1.34.0/tools/jam/src/hcache.c
+--- boost-1.34.0.old/tools/jam/src/hcache.c	2003-07-11 02:49:32.000000000 -0400
++++ boost-1.34.0/tools/jam/src/hcache.c	2007-06-29 18:14:43.000000000 -0400
+@@ -162,7 +162,7 @@
+ {
+     if (!s)
+ 	s = "";
+-    fprintf(f, "%lu\t%s\n", strlen(s), s);
++    fprintf(f, "%lu\t%s\n", (unsigned long) strlen(s), s);
+ }
+ 
+ void
+@@ -314,10 +314,10 @@
+ 	else if (c->age > maxage)
+ 	    continue;
+ 
+-	sprintf(includes_count_str, "%lu", list_length(c->includes));
+-	sprintf(hdrscan_count_str, "%lu", list_length(c->hdrscan));
+-	sprintf(time_str, "%lu", c->time);
+-	sprintf(age_str, "%lu", c->age);
++	sprintf(includes_count_str, "%lu", (unsigned long) list_length(c->includes));
++	sprintf(hdrscan_count_str, "%lu", (unsigned long) list_length(c->hdrscan));
++	sprintf(time_str, "%lu", (unsigned long) c->time);
++	sprintf(age_str, "%lu", (unsigned long) c->age);
+ 
+ 	write_netstring(f, CACHE_RECORD_HEADER);
+ 	write_netstring(f, c->boundname);
+diff -urN boost-1.34.0.old/tools/jam/src/make1.c boost-1.34.0/tools/jam/src/make1.c
+--- boost-1.34.0.old/tools/jam/src/make1.c	2005-10-02 20:47:36.000000000 -0400
++++ boost-1.34.0/tools/jam/src/make1.c	2007-06-29 18:15:19.000000000 -0400
+@@ -60,10 +60,12 @@
+ # include "make.h"
+ # include "command.h"
+ # include "execcmd.h"
++# include "debug.h"
++# include "compile.h"
+ 
+ # include <stdlib.h>
+ 
+-#if defined(sun) || defined(__sun)
++#if defined(sun) || defined(__sun) || defined(unix) || defined(__unix)
+ #include <unistd.h> /* for unlink */
+ #endif
+ 
+diff -urN boost-1.34.0.old/tools/jam/src/native.c boost-1.34.0/tools/jam/src/native.c
+--- boost-1.34.0.old/tools/jam/src/native.c	2005-09-28 10:09:58.000000000 -0400
++++ boost-1.34.0/tools/jam/src/native.c	2007-06-29 18:13:14.000000000 -0400
+@@ -8,6 +8,7 @@
+ # define P0 (PARSE *)0
+ # define C0 (char *)0
+ 
++void lol_build( LOL* lol, char** elements );
+ 
+ void declare_native_rule(char* module, char* rule, char** args, 
+                          LIST*(*f)(PARSE*, FRAME*), int version)
+diff -urN boost-1.34.0.old/tools/jam/src/newstr.c boost-1.34.0/tools/jam/src/newstr.c
+--- boost-1.34.0.old/tools/jam/src/newstr.c	2005-10-02 20:47:36.000000000 -0400
++++ boost-1.34.0/tools/jam/src/newstr.c	2007-06-29 18:11:37.000000000 -0400
+@@ -8,6 +8,7 @@
+ # include "newstr.h"
+ # include "hash.h"
+ # include "compile.h"
++# include "debug.h"
+ # include <stddef.h>
+ # include <stdlib.h>
+ 

@@ -1,0 +1,169 @@
+<?xml version="1.0" standalone="no"?> <!--*- mode: nxml -*-->
+<?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
+<moduleset>
+  <repository type="tarball" name="gnu"
+    href="http://ftp.gnu.org/gnu/"/>
+  <repository type="tarball" name="pkgconfig"
+    href="http://pkgconfig.freedesktop.org/releases/"/>
+  <repository type="tarball" name="python"
+    href="http://www.python.org/ftp/python/"/>
+  <repository type="tarball" name="apache"
+    href="http://download.nextag.com/apache/"/>
+  <repository type="tarball" name="subversion"
+    href="http://subversion.tigris.org/downloads/"/>
+  <repository type="tarball" name="sourceforge"
+    href="http://downloads.sourceforge.net/"/>
+  <repository type="tarball" name="trilinos"
+    href="http://software.sandia.gov/trilinos/downloads/files/"/>
+  <repository type="tarball" name="openssl"
+    href="http://www.openssl.org/source/"/>
+  <repository type="tarball" name="neon"
+    href="http://www.webdav.org/neon/"/>
+  <repository type="tarball" name="curl"
+    href="http://curl.haxx.se/download/"/>
+  <repository type="tarball" name="git"
+    href="http://kernel.org/pub/software/scm/git/"/>
+  <repository type="tarball" name="netlib"
+    href="http://netlib.org"/>
+  <repository type="tarball" name="hedgestuff"
+    href="http://tiker.net/hedgestuff/"/>
+  <repository type="git" name="git.tiker"
+      href="http://git.tiker.net/trees/"/>
+
+  <autotools id="openssl" 
+    autogen-sh="config" 
+    alwaysautogen="yes"
+    autogenargs="shared"
+    standardautogen="no">
+    <branch repo="openssl"
+      module="openssl-0.9.8e.tar.gz" version="0.9.8e"
+      size="3341665" md5sum="3a7ff24f6ea5cd711984722ad654b927" />
+  </autotools>
+
+  <autotools id="curl" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="curl"
+      module="curl-7.16.2.tar.gz" version="7.16.2"
+      size="2121758" md5sum="efa3301691d3ad6d454475f4d276c562" />
+    <dependencies>
+      <dep package="openssl"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="git" makeargs="prefix=$THEPREFIX">
+    <branch repo="git"
+      module="git-1.5.1.4.tar.bz2" version="1.5.1.4"
+      size="1126258" md5sum="ed4c3b6678bde5a4e09c2206430242df" />
+    <dependencies>
+      <dep package="curl"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="lapack"
+    autogen-sh="./blah; cp make.inc.example make.inc; true"
+    makeargs="lib"
+    standardautogen="no"
+    alwaysautogen="yes"
+    skipinstall="yes"
+    >
+    <branch repo="netlib"
+      module="lapack/lapack-lite-3.1.1.tgz" version="3.1.1"
+      size="5332509" md5sum="5feace3f4507a92ef822b2e0b50151d7" 
+      />
+  </autotools>
+
+  <autotools id="atlas" 
+    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure "
+    autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
+    makeargs="-C mybuild" standardautogen="no">
+    <branch repo="sourceforge"
+      module="math-atlas/atlas3.7.30.tar.bz2" version="3.7.30"
+      size="2126223" md5sum="904b750739e7edbd7a7dadfc50d11324" 
+      checkoutdir="ATLAS"/>
+    <dependencies>
+      <dep package="lapack"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="screen" autogen-sh="configure"
+    alwaysautogen="yes">
+    <branch repo="gnu"
+      module="screen/screen-4.0.2.tar.gz" version="4.0.2"
+      size="840519" md5sum="ed68ea9b43d9fba0972cb017a24940a1" />
+  </autotools>
+  
+  <autotools id="python" autogenargs="--enable-shared" autogen-sh="configure">
+    <branch repo="python"
+      module="2.5.1/Python-2.5.1.tar.bz2" version="2.5.1"
+      size="9383651" md5sum="70084ffa561660f07de466c2c8c4842d" />
+  </autotools>
+
+  <distutils id="numpy">
+    <branch repo="sourceforge"
+      module="numpy/numpy-1.0.1.tar.gz" version="1.0.1"
+      size="1249684" md5sum="13a29244cbe03e0d45e56d8d90ecb55d" />
+    <dependencies>
+      <dep package="python"/>
+    </dependencies>
+  </distutils>
+
+  <autotools id="boost" autogenargs="--with-python=python2.5" autogen-sh="configure">
+    <branch repo="hedgestuff"
+      module="boost-1.34.0.tar.bz2" version="1.34.0"
+      size="12989581" md5sum="ab4407c8d00e8226d96c83b8ce304f9c">
+    </branch>
+    <dependencies>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="meshpy" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_34 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
+    </branch>
+    <dependencies>
+      <dep package="git" />
+      <dep package="boost"/>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+  
+  <distutils id="pytools">
+    <branch repo="git.tiker" module="pytools.git" checkoutdir="pytools">
+    </branch>
+    <dependencies>
+      <dep package="git" />
+      <dep package="python"/>
+    </dependencies>
+  </distutils>
+
+  <autotools id="silo" 
+    autogenargs="--without-readline" 
+    autogen-sh="./blah; CFLAGS=-fPIC configure">
+    <branch repo="hedgestuff"
+      module="silo060605.tar.bz2" version="060605"
+      size="736278" md5sum="1fbe3c94e7bce0bfa1f2ec9682eb0c6a" />
+  </autotools>
+
+  <autotools id="pylinear" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_34 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
+    </branch>
+    <dependencies>
+      <dep package="git" />
+      <dep package="boost"/>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+  
+  <metamodule id="hedgeenv">
+    <dependencies>
+      <dep package="silo" />
+      <dep package="meshpy" />
+      <dep package="atlas" />
+    </dependencies>
+  </metamodule>
+</moduleset>
