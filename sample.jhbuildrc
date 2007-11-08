@@ -40,5 +40,7 @@ if use_mpi:
     os.environ['CC'] = "mpicc"
     os.environ['CXX'] = "mpicxx"
     os.environ['WITH_MPI'] = "--with-mpi"
+    os.environ['HAVE_MPI'] = "--have-mpi"
 else:
     os.environ['WITH_MPI'] = ""
+    os.environ['HAVE_MPI'] = ""
