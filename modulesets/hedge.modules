@@ -27,6 +27,8 @@
     href="http://netlib.org"/>
   <repository type="tarball" name="hedgestuff"
     href="http://tiker.net/hedgestuff/"/>
+  <repository type="tarball" name="software.tiker"
+    href="http://news.tiker.net/news.tiker.net/download/software/"/>
   <repository type="git" name="git.tiker"
       href="http://git.tiker.net/trees/"/>
 
@@ -67,19 +69,18 @@
     alwaysautogen="yes"
     skipinstall="yes"
     >
-    <branch repo="netlib"
-      module="lapack/lapack-lite-3.1.1.tgz" version="3.1.1"
-      size="5332509" md5sum="5feace3f4507a92ef822b2e0b50151d7" 
+    <branch repo="hedgestuff"
+      module="lapack-lite-3.1.1.tar.gz" version="3.1.1"
       />
   </autotools>
 
   <autotools id="atlas" 
-    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure "
+    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure -Fa al -fpic"
     autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
     makeargs="-C mybuild" standardautogen="no">
     <branch repo="sourceforge"
-      module="math-atlas/atlas3.7.30.tar.bz2" version="3.7.30"
-      size="2126223" md5sum="904b750739e7edbd7a7dadfc50d11324" 
+      module="math-atlas/atlas3.8.0.tar.bz2" version="3.8.0"
+      size="2463051" md5sum="fd42a00f36243bf4815d035b226ec305" 
       checkoutdir="ATLAS"/>
     <dependencies>
       <dep package="lapack"/>
@@ -108,10 +109,12 @@
     </dependencies>
   </distutils>
 
-  <autotools id="boost" autogenargs="--with-python=python2.5" autogen-sh="configure">
+  <autotools id="boost" 
+    autogenargs="--with-python=$THEPREFIX/bin/python2.5 $WITH_MPI" 
+    autogen-sh="configure"
+    alwaysautogen="yes">
     <branch repo="hedgestuff"
-      module="boost-1.34.0.tar.bz2" version="1.34.0"
-      size="12989581" md5sum="ab4407c8d00e8226d96c83b8ce304f9c">
+      module="boost-1.35.0pre.tar.bz2" version="1.35.0pre">
     </branch>
     <dependencies>
       <dep package="python"/>
@@ -119,15 +122,13 @@
   </autotools>
 
   <autotools id="meshpy" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_34 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
     </branch>
     <dependencies>
-      <!--
       <dep package="boost"/>
       <dep package="python"/>
-      -->
     </dependencies>
   </autotools>
   
@@ -139,11 +140,20 @@
     </dependencies>
   </distutils>
 
+  <distutils id="pymbolic">
+    <branch repo="git.tiker" module="pymbolic.git" checkoutdir="pymbolic">
+    </branch>
+    <dependencies>
+      <dep package="python"/>
+      <dep package="pytools" />
+    </dependencies>
+  </distutils>
+
   <autotools id="boost-bindings" 
     autogen-sh="configure">
-    <branch repo="hedgestuff"
-      module="boost-bindings-20070715.tar.gz" version="20070715"
-      size="69025" md5sum="2a31a358da531d6390b9c811710002b3" 
+    <branch repo="software.tiker"
+      module="boost-bindings/boost-bindings-20071107.tar.gz" version="20071107"
+      size="69830" md5sum="968f5f6e106435fb3ac639044edb5f95" 
       checkoutdir="boost-bindings"/>
   </autotools>
 
@@ -157,33 +167,51 @@
 
   <autotools id="silo" 
     autogenargs="--without-readline --without-python" 
-    autogen-sh="./blah; CFLAGS=-fPIC ./configure">
+    autogen-sh="./blah; CFLAGS=-fpic ./configure">
     <branch repo="hedgestuff"
       module="silo060605.tar.bz2" version="060605"
       size="736278" md5sum="1fbe3c94e7bce0bfa1f2ec9682eb0c6a" />
   </autotools>
 
   <autotools id="pylinear" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_34 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
+    </branch>
+    <dependencies>
+      <dep package="atlas" />
+      <!--
+      <dep package="atlas" />
+      <dep package="boost-bindings"/>
+      <dep package="boost"/>
+      <dep package="python"/>
+      -->
+    </dependencies>
+  </autotools>
+  
+  <autotools id="hedge" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI" 
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
     </branch>
     <dependencies>
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="boost-bindings"/>
-      <dep package="atlas" />
+      <dep package="pylinear" />
+      <dep package="boost-math-toolkit" />
+      <dep package="pymbolic" />
+      <dep package="pytools" />
     </dependencies>
   </autotools>
   
   <metamodule id="hedgeenv">
     <dependencies>
       <!--
-      <dep package="git" />
-      <dep package="silo" />
+      <dep package="hedge" />
       -->
-      <dep package="meshpy" />
 
+      <dep package="pylinear" />
     </dependencies>
   </metamodule>
 </moduleset>

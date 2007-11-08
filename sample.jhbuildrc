@@ -1,5 +1,7 @@
 # -*- mode: python -*-
 
+use_mpi = True 
+
 # edit this file to match your settings and copy it to ~/.jhbuildrc
 
 # what module set should be used.  The default at the moment is 'gnome-2.16',
@@ -10,14 +12,14 @@ moduleset = 'hedge'
 # A list of the modules to build.  
 modules = [ 'hedgeenv' ]
 
-import socket
-hostname = socket.gethostname().split(".")[0]
+from subprocess import Popen, PIPE
+arch = Popen(["uname", "-m"], stdout=PIPE).communicate()[0].strip()
 
 # what directory should the source be checked out to?
-checkoutroot = os.path.expanduser('~/mach/%s/src' % hostname)
+checkoutroot = os.path.expanduser('~/mach/%s/src' % arch)
 
 # the prefix to configure/install modules to (must have write access)
-prefix = os.path.expanduser('~/mach/%s/pool' % hostname)
+prefix = os.path.expanduser('~/mach/%s/pool' % arch)
 
 # if you do not want to use system-installed libraries for your builds, comment
 # out the lines below
@@ -32,4 +34,11 @@ use_lib64 = False
 autogenargs=''
 
 os.environ['THEPREFIX'] = prefix
-os.environ['GCCVER'] = "42"
+os.environ['GCCVER'] = "41"
+
+if use_mpi:
+    os.environ['CC'] = "mpicc"
+    os.environ['CXX'] = "mpicxx"
+    os.environ['WITH_MPI'] = "--with-mpi"
+else:
+    os.environ['WITH_MPI'] = ""
