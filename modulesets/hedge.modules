@@ -177,7 +177,7 @@
   </autotools>
 
   <autotools id="silo" 
-    autogenargs="--without-readline --without-python" 
+    autogenargs="--without-readline --without-python --without-hdf5" 
     autogen-sh="./blah; CFLAGS=-fpic ./configure">
     <branch repo="hedgestuff"
       module="silo060605.tar.bz2" version="060605"
@@ -206,6 +206,19 @@
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="pytools" />
+    </dependencies>
+  </autotools>
+
+  <autotools id="pylo" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings"  
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="pylo.git" checkoutdir="pylo">
+    </branch>
+    <dependencies>
+      <dep package="boost"/>
+      <dep package="python"/>
+      <dep package="pytools" />
+      <dep package="silo" />
     </dependencies>
   </autotools>
 
