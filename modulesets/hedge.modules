@@ -75,7 +75,7 @@
   </autotools>
 
   <autotools id="atlas" 
-    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure -Fa al -fpic"
+    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure -Fa alg -fpic"
     autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
     makeargs="-C mybuild" standardautogen="no">
     <branch repo="sourceforge"
