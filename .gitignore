@@ -2,3 +2,5 @@
 *~
 *.pyc
 install-check
+.*.swp
+.*.swo

@@ -30,7 +30,15 @@
   <repository type="tarball" name="software.tiker"
     href="http://news.tiker.net/news.tiker.net/download/software/"/>
   <repository type="git" name="git.tiker"
-      href="http://git.tiker.net/trees/"/>
+    href="http://git.tiker.net/trees/"/>
+  <repository type="git" name="git.grizzly.work"
+    href="git+ssh://grizzly.ath.cx/home/andreas/work/"/>
+  <repository type="git" name="git.grizzly.dam"
+    href="git+ssh://grizzly.ath.cx/home/andreas/dam/research/software/"/>
+  <repository type="git" name="git.grizzly.dam"
+    href="git+ssh://grizzly.ath.cx:dam/research/software"/>
+  <repository type="tarball" name="sqlite"
+      href="http://sqlite.org/"/>
 
   <autotools id="openssl" 
     autogen-sh="config" 
@@ -49,14 +57,14 @@
       module="curl-7.16.2.tar.gz" version="7.16.2"
       size="2121758" md5sum="efa3301691d3ad6d454475f4d276c562" />
     <dependencies>
-      <dep package="openssl"/>
+      <!--<dep package="openssl"/>-->
     </dependencies>
   </autotools>
 
   <autotools id="git" makeargs="prefix=$THEPREFIX">
     <branch repo="git"
-      module="git-1.5.1.4.tar.bz2" version="1.5.1.4"
-      size="1126258" md5sum="ed4c3b6678bde5a4e09c2206430242df" />
+      module="git-1.5.4.3.tar.bz2" version="1.5.4.3"
+      size="1589678" md5sum="2b63c28d43b582f52dbaef62489616dd" />
     <dependencies>
       <dep package="curl"/>
     </dependencies>
@@ -94,10 +102,19 @@
       size="840519" md5sum="ed68ea9b43d9fba0972cb017a24940a1" />
   </autotools>
   
+  <autotools id="sqlite" autogenargs="--enable-shared --disable-tcl" autogen-sh="configure">
+    <branch repo="sqlite"
+      module="sqlite-3.5.6.tar.gz" version="3.5.6"
+      size="2543979" md5sum="903c9e935c538af392364a9172a3d98d" />
+  </autotools>
+
   <autotools id="python" autogenargs="--enable-shared" autogen-sh="configure">
     <branch repo="python"
-      module="2.5.1/Python-2.5.1.tar.bz2" version="2.5.1"
-      size="9383651" md5sum="70084ffa561660f07de466c2c8c4842d" />
+      module="2.5.2/Python-2.5.2.tar.bz2" version="2.5.2"
+      size="9807597" md5sum="afb5451049eda91fbde10bd5a4b7fadc" />
+    <dependencies>
+      <dep package="sqlite"/>
+    </dependencies>
   </autotools>
 
   <distutils id="numpy">
@@ -113,8 +130,8 @@
     autogenargs="--with-python=$THEPREFIX/bin/python2.5 $WITH_MPI" 
     autogen-sh="configure"
     alwaysautogen="yes">
-    <branch repo="hedgestuff"
-      module="boost-1.35.0pre.tar.bz2" version="1.35.0pre">
+    <branch repo="git.grizzly.work"
+      module="boost">
     </branch>
     <dependencies>
       <dep package="python"/>
@@ -168,14 +185,6 @@
       checkoutdir="boost-bindings"/>
   </autotools>
 
-  <autotools id="boost-math-toolkit" 
-    autogen-sh="configure">
-    <branch repo="hedgestuff"
-      module="boost-math-toolkit-20070715.tar.gz" version="20070715"
-      size="5948356" md5sum="97d7e3da74384e87b40c47aac6327426" 
-      checkoutdir="boost-math-toolkit"/>
-  </autotools>
-
   <autotools id="silo" 
     autogenargs="--without-readline --without-python --without-hdf5" 
     autogen-sh="./blah; CFLAGS=-fpic ./configure">
@@ -223,7 +232,7 @@
   </autotools>
 
   <autotools id="hedge" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --boost-math-toolkit-inc-dir=$THEPREFIX/include/boost-math-toolkit $HAVE_MPI --blas-lib-names=f77blas,atlas" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --blas-lib-names=f77blas,atlas" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
     </branch>
@@ -232,7 +241,6 @@
       <dep package="python"/>
       <dep package="boost-bindings"/>
       <dep package="pylinear" />
-      <dep package="boost-math-toolkit" />
       <dep package="pymbolic" />
       <dep package="pytools" />
       <dep package="meshpy" />
@@ -241,7 +249,7 @@
   </autotools>
   
   <autotools id="pyrticle" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --boost-math-toolkit-inc-dir=$THEPREFIX/include/boost-math-toolkit $HAVE_MPI" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="pyrticle.git" checkoutdir="pyrticle">
     </branch>
