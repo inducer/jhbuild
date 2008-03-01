@@ -2,7 +2,7 @@
 <?xml-stylesheet type="text/xsl" href="moduleset.xsl"?>
 <moduleset>
   <repository type="tarball" name="gnu"
-    href="http://ftp.gnu.org/gnu/"/>
+    href="http://mirrors.kernel.org/gnu/"/>
   <repository type="tarball" name="pkgconfig"
     href="http://pkgconfig.freedesktop.org/releases/"/>
   <repository type="tarball" name="python"
@@ -35,10 +35,19 @@
     href="git+ssh://grizzly.ath.cx/home/andreas/work/"/>
   <repository type="git" name="git.grizzly.dam"
     href="git+ssh://grizzly.ath.cx/home/andreas/dam/research/software/"/>
-  <repository type="git" name="git.grizzly.dam"
-    href="git+ssh://grizzly.ath.cx:dam/research/software"/>
   <repository type="tarball" name="sqlite"
       href="http://sqlite.org/"/>
+  <repository type="tarball" name="openmpi"
+      href="http://www.open-mpi.org/software/ompi/v1.2/downloads/"/>
+
+  <autotools id="openmpi" 
+    autogen-sh="configure" 
+    alwaysautogen="yes"
+    standardautogen="no">
+    <branch repo="openmpi"
+      module="openmpi-1.2.5.tar.bz2" version="1.2.5"
+      size="3554443" md5sum="c6e82aab6cdcd425bf29217e8317d7dc" />
+  </autotools>
 
   <autotools id="openssl" 
     autogen-sh="config" 
@@ -134,6 +143,7 @@
       module="boost">
     </branch>
     <dependencies>
+      <dep package="git"/>
       <dep package="python"/>
     </dependencies>
   </autotools>
@@ -144,6 +154,7 @@
     <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
     </dependencies>
@@ -155,6 +166,7 @@
     <branch repo="git.tiker" module="pymetis.git" checkoutdir="pymetis">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
     </dependencies>
@@ -164,6 +176,7 @@
     <branch repo="git.tiker" module="pytools.git" checkoutdir="pytools">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="python"/>
     </dependencies>
   </distutils>
@@ -172,6 +185,7 @@
     <branch repo="git.tiker" module="pymbolic.git" checkoutdir="pymbolic">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="python"/>
       <dep package="pytools" />
     </dependencies>
@@ -199,7 +213,9 @@
     <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="atlas" />
+      <dep package="pytools"/>
       <dep package="boost-bindings"/>
       <dep package="boost"/>
       <dep package="python"/>
@@ -212,6 +228,7 @@
     <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="pytools" />
@@ -224,6 +241,7 @@
     <branch repo="git.tiker" module="pylo.git" checkoutdir="pylo">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="pytools" />
@@ -237,6 +255,7 @@
     <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="boost-bindings"/>
@@ -254,11 +273,11 @@
     <branch repo="git.tiker" module="pyrticle.git" checkoutdir="pyrticle">
     </branch>
     <dependencies>
+      <dep package="git" />
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="boost-bindings"/>
       <dep package="pylinear" />
-      <dep package="boost-math-toolkit" />
       <dep package="pymbolic" />
       <dep package="pytools" />
       <dep package="meshpy" />
