@@ -1,6 +1,6 @@
 # -*- mode: python -*-
 
-use_mpi = True 
+use_mpi = True # XXX CUSTOMIZE ME!
 
 # edit this file to match your settings and copy it to ~/.jhbuildrc
 
@@ -10,7 +10,7 @@ use_mpi = True
 moduleset = 'hedge'
 
 # A list of the modules to build.  
-modules = [ 'hedgeenv' ]
+modules = [ ]
 
 from subprocess import Popen, PIPE
 arch = Popen(["uname", "-m"], stdout=PIPE).communicate()[0].strip()
@@ -34,7 +34,7 @@ use_lib64 = False
 autogenargs=''
 
 os.environ['THEPREFIX'] = prefix
-os.environ['GCCVER'] = "41"
+os.environ['GCCVER'] = "41" # XXX CUSTOMIZE ME!
 
 if use_mpi:
     os.environ['CC'] = "mpicc"
@@ -42,5 +42,8 @@ if use_mpi:
     os.environ['WITH_MPI'] = "--with-mpi"
     os.environ['HAVE_MPI'] = "--have-mpi"
 else:
+    # CUSTOMIZE ME!
+    #os.environ['CC'] = "mpicc"
+    #os.environ['CXX'] = "mpicxx"
     os.environ['WITH_MPI'] = ""
     os.environ['HAVE_MPI'] = ""
