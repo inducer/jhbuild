@@ -250,7 +250,7 @@
   </autotools>
 
   <autotools id="hedge" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --have-blas --blas-lib-names=f77blas,atlas" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --have-blas --blas-lib-names=f77blas,atlas,gfortran" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
     </branch>
