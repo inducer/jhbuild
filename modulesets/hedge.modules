@@ -32,9 +32,9 @@
   <repository type="git" name="git.tiker"
     href="http://git.tiker.net/trees/"/>
   <repository type="git" name="git.grizzly.work"
-    href="git+ssh://grizzly.ath.cx/home/andreas/work/"/>
+    href="git+ssh://grizzly.tuck.ath.cx/home/andreas/work/"/>
   <repository type="git" name="git.grizzly.dam"
-    href="git+ssh://grizzly.ath.cx/home/andreas/dam/research/software/"/>
+    href="git+ssh://grizzly.tuck.ath.cx/home/andreas/dam/research/software/"/>
   <repository type="tarball" name="sqlite"
       href="http://sqlite.org/"/>
   <repository type="tarball" name="openmpi"
@@ -250,7 +250,7 @@
   </autotools>
 
   <autotools id="hedge" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --blas-lib-names=f77blas,atlas" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --have-blas --blas-lib-names=f77blas,atlas" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
     </branch>
@@ -268,7 +268,7 @@
   </autotools>
   
   <autotools id="pyrticle" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --blas-lib-names=f77blas,atlas,gfortran" 
     autogen-sh="configure">
     <branch repo="git.tiker" module="pyrticle.git" checkoutdir="pyrticle">
     </branch>
