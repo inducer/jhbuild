@@ -235,6 +235,39 @@
     </dependencies>
   </autotools>
 
+  <autotools id="pyublas" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings"  
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="pyublas.git" checkoutdir="pyublas">
+    </branch>
+    <dependencies>
+      <dep package="git" />
+      <dep package="boost"/>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="arpack">
+    <branch repo="git.tiker" module="arpack-autotools.git" checkoutdir="arpack-autotools" />
+  </autotools>
+
+  <autotools id="pyublasext" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
+    autogen-sh="configure">
+    <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
+    </branch>
+    <dependencies>
+      <dep package="git" />
+      <dep package="atlas" />
+      <dep package="arpack" />
+      <dep package="pytools"/>
+      <dep package="boost-bindings"/>
+      <dep package="boost"/>
+      <dep package="python"/>
+    </dependencies>
+  </autotools>
+  
+
   <autotools id="pylo" 
     autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings"  
     autogen-sh="configure">
