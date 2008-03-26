@@ -39,11 +39,13 @@ os.environ['GCCVER'] = "41" # XXX CUSTOMIZE ME!
 if use_mpi:
     os.environ['CC'] = "mpicc"
     os.environ['CXX'] = "mpicxx"
+    os.environ['F77'] = "mpif77"
     os.environ['WITH_MPI'] = "--with-mpi"
     os.environ['HAVE_MPI'] = "--have-mpi"
 else:
     # CUSTOMIZE ME!
     #os.environ['CC'] = "mpicc"
     #os.environ['CXX'] = "mpicxx"
+    os.environ['F77'] = "gfortran"
     os.environ['WITH_MPI'] = ""
     os.environ['HAVE_MPI'] = ""
