@@ -128,8 +128,8 @@
 
   <distutils id="numpy">
     <branch repo="sourceforge"
-      module="numpy/numpy-1.0.1.tar.gz" version="1.0.1"
-      size="1249684" md5sum="13a29244cbe03e0d45e56d8d90ecb55d" />
+      module="numpy/numpy-1.0.4.tar.gz" version="1.0.1"
+      size="1547541" md5sum="8f011e9d7697da570efaac61c51725e0" />
     <dependencies>
       <dep package="python"/>
     </dependencies>
@@ -193,10 +193,7 @@
 
   <autotools id="boost-bindings" 
     autogen-sh="configure">
-    <branch repo="software.tiker"
-      module="boost-bindings/boost-bindings-20071107.tar.gz" version="20071107"
-      size="69830" md5sum="968f5f6e106435fb3ac639044edb5f95" 
-      checkoutdir="boost-bindings"/>
+    <branch repo="git.tiker" module="boost-bindings.git" checkoutdir="boost-bindings" />
   </autotools>
 
   <autotools id="silo" 
@@ -243,7 +240,7 @@
     <dependencies>
       <dep package="git" />
       <dep package="boost"/>
-      <dep package="python"/>
+      <dep package="numpy"/>
     </dependencies>
   </autotools>
 
@@ -252,9 +249,9 @@
   </autotools>
 
   <autotools id="pyublasext" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
+    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --have-arpack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
     autogen-sh="configure">
-    <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
+    <branch repo="git.tiker" module="pyublasext.git" checkoutdir="pyublasext">
     </branch>
     <dependencies>
       <dep package="git" />
@@ -262,8 +259,7 @@
       <dep package="arpack" />
       <dep package="pytools"/>
       <dep package="boost-bindings"/>
-      <dep package="boost"/>
-      <dep package="python"/>
+      <dep package="pyublas"/>
     </dependencies>
   </autotools>
   
@@ -275,10 +271,9 @@
     </branch>
     <dependencies>
       <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
       <dep package="pytools" />
       <dep package="silo" />
+      <dep package="pyublas" />
     </dependencies>
   </autotools>
 
@@ -292,7 +287,7 @@
       <dep package="boost"/>
       <dep package="python"/>
       <dep package="boost-bindings"/>
-      <dep package="pylinear" />
+      <dep package="pyublasext" />
       <dep package="pymbolic" />
       <dep package="pytools" />
       <dep package="meshpy" />
@@ -306,14 +301,6 @@
     <branch repo="git.tiker" module="pyrticle.git" checkoutdir="pyrticle">
     </branch>
     <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
-      <dep package="boost-bindings"/>
-      <dep package="pylinear" />
-      <dep package="pymbolic" />
-      <dep package="pytools" />
-      <dep package="meshpy" />
       <dep package="hedge" />
     </dependencies>
   </autotools>
