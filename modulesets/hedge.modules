@@ -21,6 +21,8 @@
     href="http://www.webdav.org/neon/"/>
   <repository type="tarball" name="curl"
     href="http://curl.haxx.se/download/"/>
+  <repository type="tarball" name="zlib"
+    href="http://www.zlib.net/"/>
   <repository type="tarball" name="git"
     href="http://kernel.org/pub/software/scm/git/"/>
   <repository type="tarball" name="netlib"
@@ -66,8 +68,25 @@
       module="curl-7.16.2.tar.gz" version="7.16.2"
       size="2121758" md5sum="efa3301691d3ad6d454475f4d276c562" />
     <dependencies>
-      <!--<dep package="openssl"/>-->
+      <dep package="openssl"/>
     </dependencies>
+  </autotools>
+
+  <autotools id="zlib" 
+    autogen-sh="configure" >
+    <branch repo="zlib"
+      module="zlib-1.2.3.tar.gz" version="1.2.3"
+      />
+    <dependencies>
+      <dep package="openssl"/>
+    </dependencies>
+  </autotools>
+
+  <autotools id="expat" 
+    autogen-sh="configure" >
+    <branch repo="sourceforge"
+      module="expat/expat-2.0.1.tar.gz" version="2.0.1"
+      />
   </autotools>
 
   <autotools id="git" makeargs="prefix=$THEPREFIX">
@@ -76,6 +95,9 @@
       size="1589678" md5sum="2b63c28d43b582f52dbaef62489616dd" />
     <dependencies>
       <dep package="curl"/>
+      <dep package="openssl"/>
+      <dep package="zlib"/>
+      <dep package="expat"/>
     </dependencies>
   </autotools>
 
