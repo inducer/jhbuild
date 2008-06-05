@@ -73,7 +73,9 @@
   </autotools>
 
   <autotools id="zlib" 
-    autogen-sh="configure" >
+    autogen-sh="configure"
+    alwaysautogen="yes"
+    autogenargs="--shared">
     <branch repo="zlib"
       module="zlib-1.2.3.tar.gz" version="1.2.3"
       />
