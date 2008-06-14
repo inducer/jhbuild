@@ -128,11 +128,21 @@
     </dependencies>
   </autotools>
 
+  <autotools id="ncurses" autogen-sh="configure"
+    autogenargs="--with-shared" 
+    alwaysautogen="yes">
+    <branch repo="gnu"
+      module="ncurses/ncurses-5.6.tar.gz" version="5.6" />
+  </autotools>
+
   <autotools id="screen" autogen-sh="configure"
     alwaysautogen="yes">
     <branch repo="gnu"
       module="screen/screen-4.0.2.tar.gz" version="4.0.2"
       size="840519" md5sum="ed68ea9b43d9fba0972cb017a24940a1" />
+    <dependencies>
+      <dep package="ncurses"/>
+    </dependencies>
   </autotools>
   
   <autotools id="sqlite" autogenargs="--enable-shared --disable-tcl" autogen-sh="configure">
