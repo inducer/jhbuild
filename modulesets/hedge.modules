@@ -120,8 +120,8 @@
     autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
     makeargs="-C mybuild" standardautogen="no">
     <branch repo="sourceforge"
-      module="math-atlas/atlas3.8.1.tar.bz2" version="3.8.1"
-      size="2505223" md5sum="993b1c8ff3c9378f6a466ce5e82857f7" 
+      module="math-atlas/atlas3.8.2.tar.bz2" version="3.8.2"
+      size="2468393" md5sum="dd888f5d066c1fafeaaf2ae6b37e0b85" 
       checkoutdir="ATLAS"/>
     <dependencies>
       <dep package="lapack"/>
