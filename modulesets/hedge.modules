@@ -3,6 +3,8 @@
 <moduleset>
   <repository type="tarball" name="gnu"
     href="http://mirrors.kernel.org/gnu/"/>
+  <repository type="tarball" name="mpfr"
+    href="http://www.mpfr.org/"/>
   <repository type="tarball" name="pkgconfig"
     href="http://pkgconfig.freedesktop.org/releases/"/>
   <repository type="tarball" name="python"
@@ -339,6 +341,31 @@
     </dependencies>
   </autotools>
   
+  <autotools id="gmp" 
+    autogen-sh="configure">
+    <branch repo="gnu"
+      module="gmp/gmp-4.2.4.tar.bz2" version="4.2.4" />
+  </autotools>
+
+  <autotools id="mpfr" 
+    autogen-sh="configure --with-gmp=$THEPREFIX">
+    <branch repo="mpfr"
+      module="mpfr-2.3.2/mpfr-2.3.2.tar.bz2" version="2.3.2" />
+    <dependencies>
+      <dep package="gmp" />
+    </dependencies>
+  </autotools>
+
+  <autotools id="gcc" 
+    autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure --with-gmp=$THEPREFIX --with-mpfr=$THEPREFIX --disable-multilib --disable-bootstrap"
+    makeargs="-C mybuild">
+    <branch repo="gnu"
+      module="gcc/gcc-4.3.2/gcc-4.3.2.tar.bz2" version="4.3.2" />
+    <dependencies>
+      <dep package="mpfr" />
+    </dependencies>
+  </autotools>
+
   <metamodule id="hedgeenv">
     <dependencies>
       <dep package="hedge" />
