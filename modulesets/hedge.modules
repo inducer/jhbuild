@@ -137,6 +137,11 @@
       module="ncurses/ncurses-5.6.tar.gz" version="5.6" />
   </autotools>
 
+  <autotools id="readline" autogen-sh="configure" >
+    <branch repo="gnu"
+      module="readline/readline-5.2.tar.gz" version="5.2" />
+  </autotools>
+
   <autotools id="screen" autogen-sh="configure"
     alwaysautogen="yes">
     <branch repo="gnu"
@@ -159,6 +164,7 @@
       size="9807597" md5sum="afb5451049eda91fbde10bd5a4b7fadc" />
     <dependencies>
       <dep package="sqlite"/>
+      <dep package="readline"/>
     </dependencies>
   </autotools>
 
