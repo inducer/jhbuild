@@ -170,12 +170,17 @@
 
   <distutils id="numpy">
     <branch repo="sourceforge"
-      module="numpy/numpy-1.0.4.tar.gz" version="1.0.1"
+      module="numpy/numpy-1.0.4.tar.gz" version="1.0.4"
       size="1547541" md5sum="8f011e9d7697da570efaac61c51725e0" />
     <dependencies>
       <dep package="python"/>
     </dependencies>
   </distutils>
+
+  <autotools id="ctags" autogen-sh="configure">
+    <branch repo="sourceforge"
+      module="ctags/ctags-5.7.tar.gz" version="5.7" />
+  </autotools>
 
   <autotools id="boost" 
     autogenargs="--with-python=$THEPREFIX/bin/python2.5 $WITH_MPI" 
