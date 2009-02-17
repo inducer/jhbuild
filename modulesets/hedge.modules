@@ -43,7 +43,8 @@
       href="http://sqlite.org/"/>
   <repository type="tarball" name="openmpi"
       href="http://www.open-mpi.org/software/ompi/v1.2/downloads/"/>
-
+  <repository type="tarball" name="silo"
+      href="http://wci.llnl.gov/codes/silo/"/>
   <autotools id="openmpi" 
     autogen-sh="configure" 
     alwaysautogen="yes"
@@ -95,8 +96,7 @@
 
   <autotools id="git" makeargs="prefix=$THEPREFIX">
     <branch repo="git"
-      module="git-1.5.4.3.tar.bz2" version="1.5.4.3"
-      size="1589678" md5sum="2b63c28d43b582f52dbaef62489616dd" />
+      module="git-1.6.1.3.tar.bz2" version="1.6.1.3"/>
     <dependencies>
       <dep package="curl"/>
       <dep package="openssl"/>
@@ -244,11 +244,9 @@
   </autotools>
 
   <autotools id="silo" 
-    autogenargs="--without-readline --without-python --without-hdf5" 
+    autogenargs="--without-readline --without-python --without-hdf5 --disable-silex" 
     autogen-sh="./blah; CFLAGS=-fpic ./configure">
-    <branch repo="hedgestuff"
-      module="silo060605.tar.bz2" version="060605"
-      size="736278" md5sum="1fbe3c94e7bce0bfa1f2ec9682eb0c6a" />
+    <branch repo="hedgestuff" module="silo-4.7.tar.gz" version="4.7" />
   </autotools>
 
   <autotools id="pylinear" 
