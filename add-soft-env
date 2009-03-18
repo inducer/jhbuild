@@ -1,0 +1,24 @@
+#! /bin/sh
+
+MACH=`uname -i`
+
+unset PYTHONHOME
+unset PYTHONPATH
+
+MACHPATH=mach/$MACH/pool
+
+if test -d $HOME/$MACHPATH; then
+  export MACHROOT=$HOME/$MACHPATH
+elif test -d ~kloeckner/$MACHPATH; then
+  export MACHROOT=~kloeckner/$MACHPATH
+else 
+  echo "WARNING: A valid mach/ path was not found."
+fi
+
+if test "$MACHROOT" != ""; then 
+  export PATH=$MACHROOT/bin:$PATH
+  export MANPATH=$MACHROOT/man:$MANPATH
+  export LD_LIBRARY_PATH=$MACHROOT/lib:$MACHROOT/lib64:$LD_LIBRARY_PATH
+  export LIBRARY_PATH=$MACHROOT/lib:$MACHROOT/lib64:$LIBRARY_PATH
+  export CPATH=$MACHROOT/include:$CPATH
+fi

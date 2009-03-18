@@ -13,7 +13,7 @@ moduleset = 'hedge'
 modules = [ ]
 
 from subprocess import Popen, PIPE
-arch = Popen(["uname", "-m"], stdout=PIPE).communicate()[0].strip()
+arch = Popen(["uname", "-i"], stdout=PIPE).communicate()[0].strip()
 
 # what directory should the source be checked out to?
 checkoutroot = os.path.expanduser('~/mach/%s/src' % arch)

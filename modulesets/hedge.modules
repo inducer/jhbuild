@@ -42,7 +42,7 @@
   <repository type="tarball" name="sqlite"
       href="http://sqlite.org/"/>
   <repository type="tarball" name="openmpi"
-      href="http://www.open-mpi.org/software/ompi/v1.2/downloads/"/>
+      href="http://www.open-mpi.org/software/ompi/"/>
   <repository type="tarball" name="silo"
       href="http://wci.llnl.gov/codes/silo/"/>
   <autotools id="openmpi" 
@@ -50,8 +50,11 @@
     alwaysautogen="yes"
     standardautogen="no">
     <branch repo="openmpi"
-      module="openmpi-1.2.5.tar.bz2" version="1.2.5"
-      size="3554443" md5sum="c6e82aab6cdcd425bf29217e8317d7dc" />
+      module="v1.3/downloads/openmpi-1.3.1rc4.tar.bz2" version="1.3.1rc4" />
+    <dependencies>
+      <!-- zlib doesn't build shared libraries when it's built with mpicc -->
+      <dep package="zlib"/>
+    </dependencies>
   </autotools>
 
   <autotools id="openssl" 
@@ -122,8 +125,7 @@
     autogenargs="--with-netlib-lapack=../../lapack-lite-3.1.1/lapack_LINUX.a"
     makeargs="-C mybuild" standardautogen="no">
     <branch repo="sourceforge"
-      module="math-atlas/atlas3.8.2.tar.bz2" version="3.8.2"
-      size="2468393" md5sum="dd888f5d066c1fafeaaf2ae6b37e0b85" 
+      module="math-atlas/atlas3.8.3.tar.bz2" version="3.8.3"
       checkoutdir="ATLAS"/>
     <dependencies>
       <dep package="lapack"/>
@@ -145,8 +147,7 @@
   <autotools id="screen" autogen-sh="configure"
     alwaysautogen="yes">
     <branch repo="gnu"
-      module="screen/screen-4.0.2.tar.gz" version="4.0.2"
-      size="840519" md5sum="ed68ea9b43d9fba0972cb017a24940a1" />
+      module="screen/screen-4.0.3.tar.gz" version="4.0.3" />
     <dependencies>
       <dep package="ncurses"/>
     </dependencies>
@@ -154,14 +155,12 @@
   
   <autotools id="sqlite" autogenargs="--enable-shared --disable-tcl" autogen-sh="configure">
     <branch repo="sqlite"
-      module="sqlite-3.5.6.tar.gz" version="3.5.6"
-      size="2543979" md5sum="903c9e935c538af392364a9172a3d98d" />
+      module="sqlite-3.6.11.tar.gz" version="3.6.11" />
   </autotools>
 
   <autotools id="python" autogenargs="--enable-shared" autogen-sh="configure">
     <branch repo="python"
-      module="2.5.2/Python-2.5.2.tar.bz2" version="2.5.2"
-      size="9807597" md5sum="afb5451049eda91fbde10bd5a4b7fadc" />
+      module="2.6.1/Python-2.6.1.tar.bz2" version="2.6.1" />
     <dependencies>
       <dep package="sqlite"/>
       <dep package="readline"/>
@@ -169,9 +168,7 @@
   </autotools>
 
   <distutils id="numpy">
-    <branch repo="sourceforge"
-      module="numpy/numpy-1.0.4.tar.gz" version="1.0.4"
-      size="1547541" md5sum="8f011e9d7697da570efaac61c51725e0" />
+    <branch repo="sourceforge" module="numpy/numpy-1.2.1.tar.gz" version="1.2.1" />
     <dependencies>
       <dep package="python"/>
     </dependencies>
@@ -186,61 +183,15 @@
     autogenargs="--with-python=$THEPREFIX/bin/python2.5 $WITH_MPI" 
     autogen-sh="configure"
     alwaysautogen="yes">
-    <branch repo="git.grizzly.work"
-      module="boost">
-    </branch>
+    <branch repo="sourceforge" module="boost/boost_1_38_0.tar.bz2" version="1.38.0"/>
     <dependencies>
-      <dep package="git"/>
       <dep package="python"/>
     </dependencies>
   </autotools>
 
-  <autotools id="meshpy" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
+  <autotools id="boost-numeric-bindings" 
     autogen-sh="configure">
-    <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
-    </dependencies>
-  </autotools>
-  
-  <autotools id="pymetis" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pymetis.git" checkoutdir="pymetis">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
-    </dependencies>
-  </autotools>
-  
-  <distutils id="pytools">
-    <branch repo="git.tiker" module="pytools.git" checkoutdir="pytools">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="python"/>
-    </dependencies>
-  </distutils>
-
-  <distutils id="pymbolic">
-    <branch repo="git.tiker" module="pymbolic.git" checkoutdir="pymbolic">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="python"/>
-      <dep package="pytools" />
-    </dependencies>
-  </distutils>
-
-  <autotools id="boost-bindings" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="boost-bindings.git" checkoutdir="boost-bindings" />
+    <branch repo="git.tiker" module="boost-numeric-bindings.git" checkoutdir="boost-numeric-bindings" />
   </autotools>
 
   <autotools id="silo" 
@@ -249,107 +200,10 @@
     <branch repo="hedgestuff" module="silo-4.7.tar.gz" version="4.7" />
   </autotools>
 
-  <autotools id="pylinear" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pylinear.git" checkoutdir="pylinear">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="atlas" />
-      <dep package="pytools"/>
-      <dep package="boost-bindings"/>
-      <dep package="boost"/>
-      <dep package="python"/>
-    </dependencies>
-  </autotools>
-  
-  <autotools id="meshpy" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt"  
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="meshpy.git" checkoutdir="meshpy">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
-      <dep package="pytools" />
-    </dependencies>
-  </autotools>
-
-  <autotools id="pyublas" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings"  
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pyublas.git" checkoutdir="pyublas">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="numpy"/>
-    </dependencies>
-  </autotools>
-
   <autotools id="arpack">
     <branch repo="git.tiker" module="arpack-autotools.git" checkoutdir="arpack-autotools" />
   </autotools>
 
-  <autotools id="pyublasext" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings --have-blas --have-lapack --have-arpack --compile-daskr --blas-lib-names=f77blas,atlas,gfortran --supply-xerbla" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pyublasext.git" checkoutdir="pyublasext">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="atlas" />
-      <dep package="arpack" />
-      <dep package="pytools"/>
-      <dep package="boost-bindings"/>
-      <dep package="pyublas"/>
-    </dependencies>
-  </autotools>
-  
-
-  <autotools id="pylo" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings"  
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pylo.git" checkoutdir="pylo">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="pytools" />
-      <dep package="silo" />
-      <dep package="pyublas" />
-    </dependencies>
-  </autotools>
-
-  <autotools id="hedge" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --have-blas --blas-lib-names=f77blas,atlas,gfortran" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="hedge.git" checkoutdir="hedge">
-    </branch>
-    <dependencies>
-      <dep package="git" />
-      <dep package="boost"/>
-      <dep package="python"/>
-      <dep package="boost-bindings"/>
-      <dep package="pyublasext" />
-      <dep package="pymbolic" />
-      <dep package="pytools" />
-      <dep package="meshpy" />
-      <dep package="pymetis" />
-    </dependencies>
-  </autotools>
-  
-  <autotools id="pyrticle" 
-    autogenargs="--python-exe=python2.5 --boost-inc-dir=$THEPREFIX/include/boost-1_35 --boost-lib-dir=$THEPREFIX/lib --boost-python-libname=boost_python-gcc$GCCVER-mt --boost-mpi-libname=boost_mpi-gcc$GCCVER-mt  --boost-bindings-inc-dir=$THEPREFIX/include/boost-bindings $HAVE_MPI --blas-lib-names=f77blas,atlas,gfortran" 
-    autogen-sh="configure">
-    <branch repo="git.tiker" module="pyrticle.git" checkoutdir="pyrticle">
-    </branch>
-    <dependencies>
-      <dep package="hedge" />
-    </dependencies>
-  </autotools>
-  
   <autotools id="gmp" 
     autogen-sh="configure">
     <branch repo="gnu"
@@ -369,16 +223,9 @@
     autogen-sh="blah; mkdir -p mybuild; cd mybuild; ../configure --with-gmp=$THEPREFIX --with-mpfr=$THEPREFIX --disable-multilib --disable-bootstrap"
     makeargs="-C mybuild">
     <branch repo="gnu"
-      module="gcc/gcc-4.3.2/gcc-4.3.2.tar.bz2" version="4.3.2" />
+      module="gcc/gcc-4.3.3/gcc-4.3.3.tar.bz2" version="4.3.3" />
     <dependencies>
       <dep package="mpfr" />
     </dependencies>
   </autotools>
-
-  <metamodule id="hedgeenv">
-    <dependencies>
-      <dep package="hedge" />
-
-    </dependencies>
-  </metamodule>
 </moduleset>
