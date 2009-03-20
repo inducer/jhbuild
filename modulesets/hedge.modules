@@ -130,9 +130,6 @@
     <branch repo="zlib"
       module="zlib-1.2.3.tar.gz" version="1.2.3"
       />
-    <dependencies>
-      <dep package="openssl"/>
-    </dependencies>
   </autotools>
 
   <autotools id="expat" 
