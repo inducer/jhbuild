@@ -47,6 +47,8 @@
       href="http://wci.llnl.gov/codes/silo/"/>
   <repository type="tarball" name="mvapich"
     href="http://mvapich.cse.ohio-state.edu/download/"/>
+  <repository type="tarball" name="vim"
+    href="ftp://ftp.vim.org/pub/vim/unix/"/>
   
   <autotools id="openmpi" 
     autogen-sh="configure" 
@@ -274,5 +276,12 @@
     <dependencies>
       <dep package="mpfr" />
     </dependencies>
+  </autotools>
+
+  <autotools id="vim" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="vim" module="vim-7.2.tar.bz2" version="7.2"
+      checkoutdir="vim72" />
   </autotools>
 </moduleset>
