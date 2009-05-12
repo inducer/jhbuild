@@ -49,6 +49,8 @@
     href="http://mvapich.cse.ohio-state.edu/download/"/>
   <repository type="tarball" name="vim"
     href="ftp://ftp.vim.org/pub/vim/unix/"/>
+  <repository type="tarball" name="valgrind"
+    href="http://valgrind.org/downloads/"/>
   
   <autotools id="openmpi" 
     autogen-sh="configure" 
@@ -283,5 +285,11 @@
     autogen-sh="configure" >
     <branch repo="vim" module="vim-7.2.tar.bz2" version="7.2"
       checkoutdir="vim72" />
+  </autotools>
+
+  <autotools id="valgrind" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="valgrind" module="valgrind-3.4.1.tar.bz2" version="3.4.1" />
   </autotools>
 </moduleset>
