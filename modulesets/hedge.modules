@@ -51,6 +51,8 @@
     href="ftp://ftp.vim.org/pub/vim/unix/"/>
   <repository type="tarball" name="valgrind"
     href="http://valgrind.org/downloads/"/>
+  <repository type="tarball" name="cmake"
+    href="http://www.cmake.org/files/"/>
   
   <autotools id="openmpi" 
     autogen-sh="configure" 
@@ -291,5 +293,11 @@
     alwaysautogen="yes"
     autogen-sh="configure" >
     <branch repo="valgrind" module="valgrind-3.4.1.tar.bz2" version="3.4.1" />
+  </autotools>
+
+  <autotools id="cmake" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="cmake" module="v2.6/cmake-2.6.4.tar.gz" version="2.6.4" />
   </autotools>
 </moduleset>
