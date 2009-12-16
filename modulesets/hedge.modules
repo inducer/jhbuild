@@ -304,7 +304,7 @@
   </autotools>
 
   <autotools id="gmsh" 
-    autogen-sh="blah; cmake -D ENABLE_FLTK=OFF -D CMAKE_INSTALL_PREFIX=$THEPREFIX . &amp;&amp; true" >
+    autogen-sh="blah; cmake -D ENABLE_FLTK=OFF -D CMAKE_INSTALL_PREFIX=$THEPREFIX -D CMAKE_Fortran_COMPILER=`which gfortran` . &amp;&amp; true" >
     <branch repo="gmsh" module="gmsh-2.4.2-source.tgz" version="2.4.2" />
   </autotools>
 </moduleset>
