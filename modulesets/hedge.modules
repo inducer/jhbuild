@@ -53,6 +53,8 @@
     href="http://valgrind.org/downloads/"/>
   <repository type="tarball" name="cmake"
     href="http://www.cmake.org/files/"/>
+  <repository type="tarball" name="gmsh"
+    href="http://geuz.org/gmsh/src/"/>
   
   <autotools id="openmpi" 
     autogen-sh="configure" 
@@ -299,5 +301,10 @@
     alwaysautogen="yes"
     autogen-sh="configure" >
     <branch repo="cmake" module="v2.6/cmake-2.6.4.tar.gz" version="2.6.4" />
+  </autotools>
+
+  <autotools id="gmsh" 
+    autogen-sh="blah; cmake -D ENABLE_FLTK=OFF -D CMAKE_INSTALL_PREFIX=$THEPREFIX . &amp;&amp; true" >
+    <branch repo="gmsh" module="gmsh-2.4.2-source.tgz" version="2.4.2" />
   </autotools>
 </moduleset>
