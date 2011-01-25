@@ -238,7 +238,7 @@
     autogenargs="--with-python=$THEPREFIX/bin/python2.7 $WITH_MPI" 
     autogen-sh="configure"
     alwaysautogen="yes">
-    <branch repo="sourceforge" module="boost/boost_1_38_0.tar.bz2" version="1.38.0"/>
+    <branch repo="sourceforge" module="boost/boost_1_45_0.tar.bz2" version="1.45.0"/>
     <dependencies>
       <dep package="python"/>
     </dependencies>
@@ -250,9 +250,9 @@
   </autotools>
 
   <autotools id="silo" 
-    autogenargs="--without-readline --without-python --without-hdf5 --disable-silex" 
-    checkoutdir="silo-4.8-bsd">
-    <branch repo="silo" module="silo-4.8/silo-4.8-bsd-smalltest.tar.gz" version="4.8-bsd" />
+    autogenargs="--without-readline --without-python --without-hdf5 --disable-silex">
+    <branch repo="silo" module="silo-4.8/silo-4.8-bsd-smalltest.tar.gz" version="4.8-bsd" 
+      checkoutdir="silo-4.8-bsd"/>
   </autotools>
 
   <autotools id="arpack">
