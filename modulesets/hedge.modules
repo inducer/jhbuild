@@ -286,9 +286,9 @@
 
   <autotools id="vim" 
     alwaysautogen="yes"
-    autogen-sh="configure" >
-    <branch repo="vim" module="vim-7.2.tar.bz2" version="7.2"
-      checkoutdir="vim72" />
+    autogen-sh="configure --enable-pythoninterp=dynamic" >
+    <branch repo="vim" module="vim-7.3.tar.bz2" version="7.3"
+      checkoutdir="vim73" />
   </autotools>
 
   <autotools id="valgrind" 
