@@ -55,6 +55,8 @@
     href="http://www.cmake.org/files/"/>
   <repository type="tarball" name="gmsh"
     href="http://geuz.org/gmsh/src/"/>
+  <repository type="tarball" name="libevent"
+    href="http://www.monkey.org/~provos/"/>
   
   <autotools id="openmpi" 
     autogen-sh="configure" 
@@ -307,4 +309,24 @@
     autogen-sh="blah; cmake -D ENABLE_FLTK=OFF -D CMAKE_INSTALL_PREFIX=$THEPREFIX -D CMAKE_Fortran_COMPILER=`which gfortran` . &amp;&amp; true" >
     <branch repo="gmsh" module="gmsh-2.4.2-source.tgz" version="2.4.2" />
   </autotools>
+
+  <autotools id="libevent" 
+    alwaysautogen="yes"
+    autogen-sh="configure" >
+    <branch repo="libevent" module="libevent-2.0.11-stable.tar.gz" version="2.0.11" />
+  </autotools>
+
+  <autotools id="tmux" 
+    alwaysautogen="yes"
+    autogen-sh="configure" 
+    makeargs="CPPFLAGS=-I$THEPREFIX/include/ncurses LDFLAGS=-L$THEPREFIX/lib PREFIX=$THEPREFIX"
+    >
+    <branch repo="sourceforge"
+      module="tmux/tmux-1.4.tar.gz" version="1.4"
+      />
+    <dependencies>
+      <dep package="libevent" />
+    </dependencies>
+  </autotools>
+
 </moduleset>
