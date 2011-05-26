@@ -319,7 +319,7 @@
   <autotools id="tmux" 
     alwaysautogen="yes"
     autogen-sh="configure" 
-    makeargs="CPPFLAGS=-I$THEPREFIX/include/ncurses LDFLAGS=-L$THEPREFIX/lib PREFIX=$THEPREFIX"
+    makeargs="CPPFLAGS=&quot;-I$THEPREFIX/include/ncurses -I$THEPREFIX/include -I.&quot; LDFLAGS=-L$THEPREFIX/lib PREFIX=$THEPREFIX\"
     >
     <branch repo="sourceforge"
       module="tmux/tmux-1.4.tar.gz" version="1.4"
